@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -183,3 +183,7 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 - Added timezone-aware Event date/time validation and UTC conversion.
 - Added accessible shortcodes and template override support.
 - Added singular detail sections and Event JSON-LD output.
+
+= 1.0.1 =
+
+- Release packaging update.

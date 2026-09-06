@@ -1,0 +1,30 @@
+.youract-meta-wrap {
+	padding-top: 4px;
+}
+
+.youract-meta-group {
+	margin-bottom: 24px;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.youract-meta-group:last-child {
+	border-bottom: 0;
+	margin-bottom: 8px;
+}
+
+.youract-meta-group h3 {
+	margin-top: 0;
+	margin-bottom: 12px;
+}
+
+.youract-two-col {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 16px;
+}
+
+.youract-meta-wrap .description {
+	display: block;
+	margin-top: 4px;
+}

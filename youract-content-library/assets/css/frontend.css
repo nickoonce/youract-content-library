@@ -1,0 +1,71 @@
+.youract-resource-library,
+.youract-event-list,
+.youract-featured-resources,
+.youract-upcoming-events,
+.youract-details {
+	margin-block: 1.5rem;
+}
+
+.youract-filter-grid,
+.youract-card-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1rem;
+}
+
+.youract-card {
+	border: 1px solid currentColor;
+	padding: 1rem;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.youract-card-title {
+	margin-top: 0;
+}
+
+.youract-meta-list {
+	display: grid;
+	grid-template-columns: minmax(9rem, max-content) 1fr;
+	gap: 0.4rem 0.7rem;
+	margin: 0 0 1rem;
+}
+
+.youract-meta-list dt {
+	font-weight: 600;
+}
+
+.youract-meta-list dd {
+	margin: 0;
+}
+
+.youract-filter-actions {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+}
+
+.youract-pagination ul {
+	display: flex;
+	gap: 0.4rem;
+	list-style: none;
+	padding: 0;
+}
+
+.youract-resource-library a:focus-visible,
+.youract-event-list a:focus-visible,
+.youract-featured-resources a:focus-visible,
+.youract-upcoming-events a:focus-visible,
+.youract-details a:focus-visible,
+.youract-filter-form button:focus-visible,
+.youract-filter-form input:focus-visible,
+.youract-filter-form select:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: 2px;
+}
+
+@media (max-width: 48rem) {
+	.youract-meta-list {
+		grid-template-columns: 1fr;
+	}
+}

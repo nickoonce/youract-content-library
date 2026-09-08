@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -209,3 +209,7 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 = 1.0.3 =
 
 - Fixed block inserter visibility for the Event Details dynamic block in the editor.
+
+= 1.0.4 =
+
+- Added explicit editor-side fallback block registration for environments that do not surface metadata-only dynamic blocks in inserter.

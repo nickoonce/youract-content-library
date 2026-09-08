@@ -51,9 +51,18 @@ class Blocks {
 			return;
 		}
 
+		wp_register_script(
+			'youract-event-details-block-editor',
+			YOURACT_CONTENT_LIBRARY_URL . 'assets/js/event-details-block-editor.js',
+			array( 'wp-blocks', 'wp-element', 'wp-i18n' ),
+			YOURACT_CONTENT_LIBRARY_VERSION,
+			true
+		);
+
 		register_block_type(
 			YOURACT_CONTENT_LIBRARY_PATH . 'blocks/event-details',
 			array(
+				'editor_script'   => 'youract-event-details-block-editor',
 				'render_callback' => array( $this, 'render_event_details_block' ),
 			)
 		);

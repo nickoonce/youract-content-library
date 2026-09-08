@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -205,3 +205,7 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 - Added a server-rendered Event Details block for template editor use.
 - Added loop-safe compact rendering behavior for archive Query Loop usage.
 - Simplified Event admin list columns to title, format, start, and end.
+
+= 1.0.3 =
+
+- Fixed block inserter visibility for the Event Details dynamic block in the editor.

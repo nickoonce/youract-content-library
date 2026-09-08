@@ -16,6 +16,7 @@
   },
   "usesContext": ["postId", "postType"],
   "supports": {
-    "html": false
+    "html": false,
+    "auto_register": true
   }
 }

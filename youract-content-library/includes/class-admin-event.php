@@ -49,6 +49,7 @@ class Admin_Event {
 		add_filter( 'redirect_post_location', array( $this, 'add_notice_query_arg' ), 10, 2 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_filter( 'manage_edit-act_event_columns', array( $this, 'set_columns' ) );
+		add_filter( 'manage_act_event_posts_columns', array( $this, 'set_columns' ), 100 );
 		add_action( 'manage_act_event_posts_custom_column', array( $this, 'render_column' ), 10, 2 );
 		add_filter( 'manage_edit-act_event_sortable_columns', array( $this, 'set_sortable_columns' ) );
 		add_action( 'pre_get_posts', array( $this, 'handle_sorting' ) );
@@ -61,14 +62,15 @@ class Admin_Event {
 	 * @return array<string, string>
 	 */
 	public function set_columns( array $columns ): array {
-		$columns['event_start']   = __( 'Start', 'youract-content-library' );
-		$columns['act_event_type'] = __( 'Event Type', 'youract-content-library' );
-		$columns['event_organizer'] = __( 'Organizer', 'youract-content-library' );
-		$columns['event_format']  = __( 'Format', 'youract-content-library' );
-		$columns['event_status']  = __( 'Status', 'youract-content-library' );
-		$columns['last_verified'] = __( 'Last Verified', 'youract-content-library' );
+		$cb = $columns['cb'] ?? '<input type="checkbox" />';
 
-		return $columns;
+		return array(
+			'cb'           => $cb,
+			'title'        => __( 'Title', 'youract-content-library' ),
+			'event_format' => __( 'Format', 'youract-content-library' ),
+			'event_start'  => __( 'Start', 'youract-content-library' ),
+			'event_end'    => __( 'End', 'youract-content-library' ),
+		);
 	}
 
 	/**
@@ -95,20 +97,19 @@ class Admin_Event {
 			return;
 		}
 
-		if ( 'act_event_type' === $column ) {
-			$terms = get_the_terms( $post_id, 'act_event_type' );
-			if ( empty( $terms ) || is_wp_error( $terms ) ) {
+		if ( 'event_end' === $column ) {
+			$end_utc  = (int) get_post_meta( $post_id, '_youract_event_end_utc', true );
+			$timezone = (string) get_post_meta( $post_id, '_youract_event_timezone', true );
+			if ( ! Utils::is_valid_timezone( $timezone ) ) {
+				$timezone = Utils::get_default_timezone();
+			}
+
+			if ( $end_utc <= 0 ) {
 				echo '&#8212;';
 				return;
 			}
 
-			echo esc_html( implode( ', ', wp_list_pluck( $terms, 'name' ) ) );
-			return;
-		}
-
-		if ( 'event_organizer' === $column ) {
-			$value = (string) get_post_meta( $post_id, '_youract_event_organizer', true );
-			echo '' !== $value ? esc_html( $value ) : '&#8212;';
+			echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $end_utc, new \DateTimeZone( $timezone ) ) );
 			return;
 		}
 
@@ -123,22 +124,6 @@ class Admin_Event {
 			return;
 		}
 
-		if ( 'event_status' === $column ) {
-			$status = (string) get_post_meta( $post_id, '_youract_event_status', true );
-			$map    = array(
-				'scheduled' => __( 'Scheduled', 'youract-content-library' ),
-				'postponed' => __( 'Postponed', 'youract-content-library' ),
-				'cancelled' => __( 'Cancelled', 'youract-content-library' ),
-				'completed' => __( 'Completed', 'youract-content-library' ),
-			);
-			echo '' !== $status ? esc_html( $map[ $status ] ?? $status ) : esc_html__( 'Scheduled', 'youract-content-library' );
-			return;
-		}
-
-		if ( 'last_verified' === $column ) {
-			$value = (string) get_post_meta( $post_id, '_youract_last_verified', true );
-			echo '' !== $value ? esc_html( $value ) : '&#8212;';
-		}
 	}
 
 	/**
@@ -149,10 +134,8 @@ class Admin_Event {
 	 */
 	public function set_sortable_columns( array $columns ): array {
 		$columns['event_start']    = 'event_start';
-		$columns['event_organizer'] = 'event_organizer';
+		$columns['event_end']      = 'event_end';
 		$columns['event_format']   = 'event_format';
-		$columns['event_status']   = 'event_status';
-		$columns['last_verified']  = 'last_verified';
 
 		return $columns;
 	}
@@ -175,10 +158,8 @@ class Admin_Event {
 		$orderby = $query->get( 'orderby' );
 		$map     = array(
 			'event_start'     => '_youract_event_start_utc',
-			'event_organizer' => '_youract_event_organizer',
+			'event_end'       => '_youract_event_end_utc',
 			'event_format'    => '_youract_event_format',
-			'event_status'    => '_youract_event_status',
-			'last_verified'   => '_youract_last_verified',
 		);
 
 		if ( ! isset( $map[ $orderby ] ) ) {
@@ -188,7 +169,7 @@ class Admin_Event {
 		$query->set( 'meta_key', $map[ $orderby ] );
 		$query->set( 'orderby', 'meta_value' );
 
-		if ( 'event_start' === $orderby ) {
+		if ( 'event_start' === $orderby || 'event_end' === $orderby ) {
 			$query->set( 'orderby', 'meta_value_num' );
 		}
 	}

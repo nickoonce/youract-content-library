@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "youract/event-details",
+  "title": "YourACT Event Details",
+  "category": "widgets",
+  "icon": "calendar-alt",
+  "description": "Displays structured details for the current Event post.",
+  "textdomain": "youract-content-library",
+  "attributes": {
+    "viewMode": {
+      "type": "string",
+      "default": "auto",
+      "enum": ["auto", "full", "compact"]
+    }
+  },
+  "usesContext": ["postId", "postType"],
+  "supports": {
+    "html": false
+  }
+}

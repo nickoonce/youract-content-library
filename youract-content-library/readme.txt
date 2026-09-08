@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,18 @@ Displays active featured Resources.
 = [youract_upcoming_events limit="3"] =
 
 Displays next upcoming Events based on UTC timestamps.
+
+== Block Documentation ==
+
+= YourACT Event Details (youract/event-details) =
+
+Server-rendered block for the Site Editor and template editor.
+
+- Intended for Event single templates.
+- Uses the current Event context and renders the same structured details panel used on singular Event views.
+- If this block is present in a rendered template, the plugin avoids appending a duplicate Event Details section via the_content.
+- Supports a viewMode attribute: auto, full, compact.
+- In Query Loop context, auto mode renders compact details for archive-friendly output.
 
 == Field Documentation ==
 
@@ -187,3 +199,9 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 = 1.0.1 =
 
 - Release packaging update.
+
+= 1.0.2 =
+
+- Added a server-rendered Event Details block for template editor use.
+- Added loop-safe compact rendering behavior for archive Query Loop usage.
+- Simplified Event admin list columns to title, format, start, and end.

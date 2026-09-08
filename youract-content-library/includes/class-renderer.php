@@ -27,6 +27,13 @@ class Renderer {
 	private static int $card_counter = 0;
 
 	/**
+	 * Counter for unique details heading IDs.
+	 *
+	 * @var int
+	 */
+	private static int $details_counter = 0;
+
+	/**
 	 * Registers runtime hooks.
 	 *
 	 * @return void
@@ -191,28 +198,56 @@ class Renderer {
 		}
 
 		if ( is_singular( 'act_event' ) ) {
+			if ( has_block( 'youract/event-details', $content ) || $this->template_has_event_details_block() ) {
+				return $content;
+			}
+
 			$enabled = (bool) apply_filters( 'youract_event_details_enabled', true, get_the_ID() );
 			if ( ! $enabled ) {
 				return $content;
 			}
 
 			do_action( 'youract_before_event_details', get_the_ID() );
-
-			$details = $this->build_event_details_data( get_the_ID() );
-			$html    = $this->render_template( 'event-details.php', array( 'event' => $details ) );
-
-			/**
-			 * Filters singular Event details HTML.
-			 *
-			 * @param string               $html    Details HTML.
-			 * @param array<string, mixed> $details Details data.
-			 */
-			$html = (string) apply_filters( 'youract_event_details_html', $html, $details );
+			$details = $this->get_event_details_data( get_the_ID() );
+			$html    = $this->render_event_details( get_the_ID(), $details );
 			do_action( 'youract_after_event_details', get_the_ID(), $details, $html );
 			return $content . $html;
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Renders Event details for one Event post.
+	 *
+	 * @param int                        $post_id Event post ID.
+	 * @param array<string, mixed>|null $details Optional prepared details.
+	 * @return string
+	 */
+	public function render_event_details( int $post_id, ?array $details = null ): string {
+		if ( null === $details ) {
+			$details = $this->get_event_details_data( $post_id );
+		}
+
+		$html    = $this->render_template( 'event-details.php', array( 'event' => $details ) );
+
+		/**
+		 * Filters singular Event details HTML.
+		 *
+		 * @param string               $html    Details HTML.
+		 * @param array<string, mixed> $details Details data.
+		 */
+		return (string) apply_filters( 'youract_event_details_html', $html, $details );
+	}
+
+	/**
+	 * Returns Event details data for one Event post.
+	 *
+	 * @param int $post_id Event post ID.
+	 * @return array<string, mixed>
+	 */
+	public function get_event_details_data( int $post_id ): array {
+		return $this->build_event_details_data( $post_id );
 	}
 
 	/**
@@ -362,6 +397,7 @@ class Renderer {
 
 		$data = array(
 			'post_id'                    => $post_id,
+			'heading_id'                 => $this->next_details_heading_id( $post_id ),
 			'status'                     => $status,
 			'status_label'               => $this->event_status_label( $status ),
 			'timing'                     => $timing,
@@ -446,5 +482,31 @@ class Renderer {
 	private function next_heading_id( string $prefix ): string {
 		self::$card_counter++;
 		return 'youract-' . sanitize_key( $prefix ) . '-card-title-' . self::$card_counter;
+	}
+
+	/**
+	 * Returns a unique heading ID for details markup.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string
+	 */
+	private function next_details_heading_id( int $post_id ): string {
+		self::$details_counter++;
+		return 'youract-event-details-heading-' . max( 0, $post_id ) . '-' . self::$details_counter;
+	}
+
+	/**
+	 * Detects whether the active block template already includes the Event Details block.
+	 *
+	 * @return bool
+	 */
+	private function template_has_event_details_block(): bool {
+		global $_wp_current_template_content;
+
+		if ( ! is_string( $_wp_current_template_content ) || '' === $_wp_current_template_content ) {
+			return false;
+		}
+
+		return false !== strpos( $_wp_current_template_content, 'wp:youract/event-details' );
 	}
 }

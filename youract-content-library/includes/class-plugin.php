@@ -80,6 +80,13 @@ final class Plugin {
 	private Structured_Data $structured_data;
 
 	/**
+	 * Block registration service.
+	 *
+	 * @var Blocks
+	 */
+	private Blocks $blocks;
+
+	/**
 	 * Gets singleton instance.
 	 *
 	 * @return Plugin
@@ -107,6 +114,7 @@ final class Plugin {
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-renderer.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-shortcodes.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-structured-data.php';
+		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-blocks.php';
 
 		$resource_query = new Resource_Query();
 		$event_query    = new Event_Query();
@@ -119,6 +127,7 @@ final class Plugin {
 		$this->renderer          = new Renderer();
 		$this->shortcodes        = new Shortcodes( $resource_query, $event_query, $this->renderer );
 		$this->structured_data   = new Structured_Data();
+		$this->blocks            = new Blocks( $this->renderer );
 	}
 
 	/**
@@ -133,6 +142,7 @@ final class Plugin {
 		$this->renderer->register();
 		$this->shortcodes->register();
 		$this->structured_data->register();
+		$this->blocks->register();
 
 		if ( is_admin() ) {
 			$this->admin_resource->register();

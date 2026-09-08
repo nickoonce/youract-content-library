@@ -15,6 +15,7 @@ Production-oriented WordPress plugin for structured Resources and Events on Your
 - includes/class-event-query.php
 - includes/class-shortcodes.php
 - includes/class-renderer.php
+- Block integration: includes/class-blocks.php and blocks/event-details/block.json
 - Structured data: includes/class-structured-data.php
 
 ## Hooks Reference

@@ -13,9 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $timing = isset( $event['timing'] ) && is_array( $event['timing'] ) ? $event['timing'] : array();
 $deadline_tz = \YourACT\ContentLibrary\Utils::is_valid_timezone( (string) $event['timezone'] ) ? new DateTimeZone( (string) $event['timezone'] ) : new DateTimeZone( \YourACT\ContentLibrary\Utils::get_default_timezone() );
+$heading_id = isset( $event['heading_id'] ) ? sanitize_html_class( (string) $event['heading_id'] ) : '';
+if ( '' === $heading_id ) {
+	$heading_id = function_exists( 'wp_unique_id' ) ? wp_unique_id( 'youract-event-details-heading-' ) : 'youract-event-details-heading';
+}
+$is_compact = ! empty( $event['is_compact'] );
 ?>
-<section class="youract-details youract-event-details" aria-labelledby="youract-event-details-heading">
-	<h2 id="youract-event-details-heading"><?php esc_html_e( 'Event Details', 'youract-content-library' ); ?></h2>
+<section class="youract-details youract-event-details<?php echo $is_compact ? ' is-compact' : ''; ?>" aria-labelledby="<?php echo esc_attr( $heading_id ); ?>">
+	<h2 id="<?php echo esc_attr( $heading_id ); ?>"><?php esc_html_e( 'Event Details', 'youract-content-library' ); ?></h2>
 	<dl class="youract-meta-list">
 		<dt><?php esc_html_e( 'Status', 'youract-content-library' ); ?></dt>
 		<dd><?php echo esc_html( (string) $event['status_label'] ); ?></dd>
@@ -59,6 +64,17 @@ $deadline_tz = \YourACT\ContentLibrary\Utils::is_valid_timezone( (string) $event
 			<dd><?php echo esc_html( (string) $event['organizer'] ); ?></dd>
 		<?php endif; ?>
 
+		<?php if ( ! empty( $event['event_url'] ) ) : ?>
+			<dt><?php esc_html_e( 'Official event link', 'youract-content-library' ); ?></dt>
+			<dd><a href="<?php echo esc_url( (string) $event['event_url'] ); ?>"><?php esc_html_e( 'Visit official event page', 'youract-content-library' ); ?></a></dd>
+		<?php endif; ?>
+
+		<?php if ( $is_compact ) : ?>
+			</dl>
+		</section>
+		<?php return; ?>
+		<?php endif; ?>
+
 		<?php if ( ! empty( $event['registration_url'] ) || ! empty( $event['registration_deadline_utc'] ) ) : ?>
 			<dt><?php esc_html_e( 'Registration', 'youract-content-library' ); ?></dt>
 			<dd>
@@ -97,11 +113,6 @@ $deadline_tz = \YourACT\ContentLibrary\Utils::is_valid_timezone( (string) $event
 					</div>
 				<?php endif; ?>
 			</dd>
-		<?php endif; ?>
-
-		<?php if ( ! empty( $event['event_url'] ) ) : ?>
-			<dt><?php esc_html_e( 'Official event link', 'youract-content-library' ); ?></dt>
-			<dd><a href="<?php echo esc_url( (string) $event['event_url'] ); ?>"><?php esc_html_e( 'Visit official event page', 'youract-content-library' ); ?></a></dd>
 		<?php endif; ?>
 
 		<?php if ( ! empty( $event['last_verified'] ) ) : ?>

@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -210,3 +210,8 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 - Reduced the Event content model by removing venue, address, organizer, registration URL, cost, accessibility, accommodation, and last verified fields.
 - Updated event date display so single-day ranges do not repeat the date.
 - Applied upcoming-first ordering to frontend Event archive loops.
+
+= 1.0.6 =
+
+- Updated Event Details block output to hide heading, status, and disclaimer.
+- Changed event link presentation to label "More Info" and show the URL as link text.

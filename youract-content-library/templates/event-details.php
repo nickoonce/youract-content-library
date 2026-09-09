@@ -17,12 +17,21 @@ if ( '' === $heading_id ) {
 	$heading_id = function_exists( 'wp_unique_id' ) ? wp_unique_id( 'youract-event-details-heading-' ) : 'youract-event-details-heading';
 }
 $is_compact = ! empty( $event['is_compact'] );
+$hide_heading = ! empty( $event['hide_heading'] );
+$hide_status = ! empty( $event['hide_status'] );
+$hide_disclaimer = ! empty( $event['hide_disclaimer'] );
+$event_url_label = isset( $event['event_url_label'] ) && is_string( $event['event_url_label'] ) ? $event['event_url_label'] : __( 'Official event link', 'youract-content-library' );
+$event_url_use_raw_text = ! empty( $event['event_url_use_raw_text'] );
 ?>
-<section class="youract-details youract-event-details<?php echo $is_compact ? ' is-compact' : ''; ?>" aria-labelledby="<?php echo esc_attr( $heading_id ); ?>">
-	<h2 id="<?php echo esc_attr( $heading_id ); ?>"><?php esc_html_e( 'Event Details', 'youract-content-library' ); ?></h2>
+<section class="youract-details youract-event-details<?php echo $is_compact ? ' is-compact' : ''; ?>" <?php echo $hide_heading ? 'aria-label="' . esc_attr__( 'Event details', 'youract-content-library' ) . '"' : 'aria-labelledby="' . esc_attr( $heading_id ) . '"'; ?>>
+	<?php if ( ! $hide_heading ) : ?>
+		<h2 id="<?php echo esc_attr( $heading_id ); ?>"><?php esc_html_e( 'Event Details', 'youract-content-library' ); ?></h2>
+	<?php endif; ?>
 	<dl class="youract-meta-list">
-		<dt><?php esc_html_e( 'Status', 'youract-content-library' ); ?></dt>
-		<dd><?php echo esc_html( (string) $event['status_label'] ); ?></dd>
+		<?php if ( ! $hide_status ) : ?>
+			<dt><?php esc_html_e( 'Status', 'youract-content-library' ); ?></dt>
+			<dd><?php echo esc_html( (string) $event['status_label'] ); ?></dd>
+		<?php endif; ?>
 
 		<?php if ( ! empty( $timing['start_text'] ) ) : ?>
 			<dt><?php esc_html_e( 'Date and time', 'youract-content-library' ); ?></dt>
@@ -53,8 +62,12 @@ $is_compact = ! empty( $event['is_compact'] );
 		<?php endif; ?>
 
 		<?php if ( ! empty( $event['event_url'] ) ) : ?>
-			<dt><?php esc_html_e( 'Official event link', 'youract-content-library' ); ?></dt>
-			<dd><a href="<?php echo esc_url( (string) $event['event_url'] ); ?>"><?php esc_html_e( 'Visit official event page', 'youract-content-library' ); ?></a></dd>
+			<dt><?php echo esc_html( $event_url_label ); ?></dt>
+			<dd>
+				<a href="<?php echo esc_url( (string) $event['event_url'] ); ?>">
+					<?php echo esc_html( $event_url_use_raw_text ? (string) $event['event_url'] : __( 'Visit official event page', 'youract-content-library' ) ); ?>
+				</a>
+			</dd>
 		<?php endif; ?>
 
 		<?php if ( $is_compact ) : ?>
@@ -75,7 +88,7 @@ $is_compact = ! empty( $event['is_compact'] );
 			</dd>
 		<?php endif; ?>
 
-		<?php if ( ! empty( $event['disclaimer'] ) ) : ?>
+		<?php if ( ! $hide_disclaimer && ! empty( $event['disclaimer'] ) ) : ?>
 			<dt><?php esc_html_e( 'Disclaimer', 'youract-content-library' ); ?></dt>
 			<dd><?php echo esc_html( (string) $event['disclaimer'] ); ?></dd>
 		<?php endif; ?>

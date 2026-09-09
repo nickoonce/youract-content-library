@@ -108,6 +108,13 @@ class Blocks {
 		$in_query_loop = is_object( $block ) && isset( $block->context ) && is_array( $block->context ) && isset( $block->context['queryId'] );
 		$details['is_compact'] = ( 'compact' === $view_mode ) || ( 'auto' === $view_mode && $in_query_loop );
 
+		// Block-specific presentation overrides.
+		$details['hide_heading']         = true;
+		$details['hide_status']          = true;
+		$details['hide_disclaimer']      = true;
+		$details['event_url_label']      = __( 'More Info', 'youract-content-library' );
+		$details['event_url_use_raw_text'] = true;
+
 		$html    = $this->renderer->render_event_details( $post_id, $details );
 		do_action( 'youract_after_event_details', $post_id, $details, $html );
 

@@ -22,6 +22,10 @@ $hide_status = ! empty( $event['hide_status'] );
 $hide_disclaimer = ! empty( $event['hide_disclaimer'] );
 $event_url_label = isset( $event['event_url_label'] ) && is_string( $event['event_url_label'] ) ? $event['event_url_label'] : __( 'Official event link', 'youract-content-library' );
 $event_url_use_raw_text = ! empty( $event['event_url_use_raw_text'] );
+$timezone_display = isset( $timing['timezone'] ) && '' !== (string) $timing['timezone']
+	? (string) $timing['timezone']
+	: ( isset( $event['timezone'] ) ? (string) $event['timezone'] : '' );
+$pst_note = isset( $timing['pst_note'] ) ? (string) $timing['pst_note'] : '';
 ?>
 <section class="youract-details youract-event-details<?php echo $is_compact ? ' is-compact' : ''; ?>" <?php echo $hide_heading ? 'aria-label="' . esc_attr__( 'Event details', 'youract-content-library' ) . '"' : 'aria-labelledby="' . esc_attr( $heading_id ) . '"'; ?>>
 	<?php if ( ! $hide_heading ) : ?>
@@ -50,11 +54,14 @@ $event_url_use_raw_text = ! empty( $event['event_url_use_raw_text'] );
 				<?php if ( ! empty( $timing['all_day'] ) ) : ?>
 					<?php esc_html_e( ' (All day)', 'youract-content-library' ); ?>
 				<?php endif; ?>
+				<?php if ( '' !== $timezone_display ) : ?>
+					<?php echo ' ' . esc_html( $timezone_display ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php endif; ?>
+				<?php if ( '' !== $pst_note ) : ?>
+					<?php echo ' (' . esc_html__( 'PST:', 'youract-content-library' ) . ' ' . esc_html( $pst_note ) . ')'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php endif; ?>
 			</dd>
 		<?php endif; ?>
-
-		<dt><?php esc_html_e( 'Time zone', 'youract-content-library' ); ?></dt>
-		<dd><?php echo esc_html( (string) ( $timing['timezone_abbr'] ?: $event['timezone'] ) ); ?></dd>
 
 		<?php if ( ! empty( $event['format_label'] ) ) : ?>
 			<dt><?php esc_html_e( 'Format', 'youract-content-library' ); ?></dt>
@@ -79,7 +86,7 @@ $event_url_use_raw_text = ! empty( $event['event_url_use_raw_text'] );
 		<?php if ( ! empty( $event['registration_deadline_utc'] ) ) : ?>
 			<dt><?php esc_html_e( 'Registration', 'youract-content-library' ); ?></dt>
 			<dd>
-				<?php $registration_tz = \YourACT\ContentLibrary\Utils::is_valid_timezone( (string) $event['timezone'] ) ? new DateTimeZone( (string) $event['timezone'] ) : new DateTimeZone( \YourACT\ContentLibrary\Utils::get_default_timezone() ); ?>
+				<?php $registration_tz = \YourACT\ContentLibrary\Utils::get_timezone_object( (string) $event['timezone'] ); ?>
 				<?php $registration_iso = wp_date( DATE_ATOM, (int) $event['registration_deadline_utc'], $registration_tz ); ?>
 				<div>
 					<?php esc_html_e( 'Deadline:', 'youract-content-library' ); ?>

@@ -307,11 +307,7 @@ class Meta_Registration {
 	 * @return bool
 	 */
 	private function is_valid_timezone( string $timezone ): bool {
-		if ( '' === $timezone ) {
-			return false;
-		}
-
-		return in_array( $timezone, timezone_identifiers_list(), true );
+		return Utils::is_valid_timezone( $timezone );
 	}
 
 	/**

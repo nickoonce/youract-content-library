@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,12 +116,10 @@ Server-rendered block for the Site Editor and template editor.
 
 - Event start UTC timestamp (stored)
 - Event end UTC timestamp (stored)
-- Event timezone (IANA)
+- Event timezone
 - All-day flag
 - Event format: in-person, online, hybrid
 - Event URL
-- Registration deadline UTC timestamp (stored)
-- Event status: scheduled, postponed, cancelled, completed
 
 Admin UI stores date/time input in selected event timezone and converts to UTC at save.
 
@@ -215,3 +213,9 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 
 - Updated Event Details block output to hide heading, status, and disclaimer.
 - Changed event link presentation to label "More Info" and show the URL as link text.
+
+= 1.0.7 =
+
+- Improved timezone handling to support WordPress timezone selection formats consistently.
+- Updated Event date/time output to display the selected timezone value and include a PST conversion note.
+- Removed Event status and registration deadline date/time fields from the Event admin meta box.

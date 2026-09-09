@@ -93,7 +93,7 @@ class Admin_Event {
 				return;
 			}
 
-			echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $start_utc, new \DateTimeZone( $timezone ) ) );
+			echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $start_utc, Utils::get_timezone_object( $timezone ) ) );
 			return;
 		}
 
@@ -109,7 +109,7 @@ class Admin_Event {
 				return;
 			}
 
-			echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $end_utc, new \DateTimeZone( $timezone ) ) );
+			echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $end_utc, Utils::get_timezone_object( $timezone ) ) );
 			return;
 		}
 
@@ -228,11 +228,9 @@ class Admin_Event {
 
 		$start_utc = (int) get_post_meta( $post->ID, '_youract_event_start_utc', true );
 		$end_utc   = (int) get_post_meta( $post->ID, '_youract_event_end_utc', true );
-		$reg_utc   = (int) get_post_meta( $post->ID, '_youract_registration_deadline_utc', true );
 
 		$start_local = Utils::utc_to_local_inputs( $start_utc, $timezone );
 		$end_local   = Utils::utc_to_local_inputs( $end_utc, $timezone );
-		$reg_local   = Utils::utc_to_local_inputs( $reg_utc, $timezone );
 
 		$values = array(
 			'event_timezone'             => $timezone,
@@ -241,19 +239,12 @@ class Admin_Event {
 			'event_start_time'           => $this->get_form_value( $state, 'event_start_time', $start_local['time'] ),
 			'event_end_date'             => $this->get_form_value( $state, 'event_end_date', $end_local['date'] ),
 			'event_end_time'             => $this->get_form_value( $state, 'event_end_time', $end_local['time'] ),
-			'event_status'               => $this->get_form_value( $state, 'event_status', (string) get_post_meta( $post->ID, '_youract_event_status', true ) ),
 			'event_format'               => $this->get_form_value( $state, 'event_format', (string) get_post_meta( $post->ID, '_youract_event_format', true ) ),
 			'event_url'                  => $this->get_form_value( $state, 'event_url', (string) get_post_meta( $post->ID, '_youract_event_url', true ) ),
-			'registration_deadline_date' => $this->get_form_value( $state, 'registration_deadline_date', $reg_local['date'] ),
-			'registration_deadline_time' => $this->get_form_value( $state, 'registration_deadline_time', $reg_local['time'] ),
 		);
 
 		if ( '' === $values['event_format'] ) {
 			$values['event_format'] = 'in-person';
-		}
-
-		if ( '' === $values['event_status'] ) {
-			$values['event_status'] = 'scheduled';
 		}
 
 		if ( ! empty( $state['errors'] ) ) {
@@ -262,7 +253,7 @@ class Admin_Event {
 		?>
 		<div class="youract-meta-wrap">
 			<section class="youract-meta-group" aria-labelledby="youract-event-datetime-group-label">
-				<h3 id="youract-event-datetime-group-label"><?php esc_html_e( 'Date, time, and status', 'youract-content-library' ); ?></h3>
+				<h3 id="youract-event-datetime-group-label"><?php esc_html_e( 'Date and time', 'youract-content-library' ); ?></h3>
 				<p>
 					<label for="youract_event_timezone"><strong><?php esc_html_e( 'Event time zone', 'youract-content-library' ); ?></strong></label><br />
 					<?php echo wp_timezone_choice( $values['event_timezone'], 'youract_event[event_timezone]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -294,15 +285,6 @@ class Admin_Event {
 						<input id="youract_event_end_time" name="youract_event[event_end_time]" type="time" value="<?php echo esc_attr( $values['event_end_time'] ); ?>" />
 					</p>
 				</div>
-				<p>
-					<label for="youract_event_status"><strong><?php esc_html_e( 'Event status', 'youract-content-library' ); ?></strong></label><br />
-					<select id="youract_event_status" name="youract_event[event_status]">
-						<option value="scheduled" <?php selected( $values['event_status'], 'scheduled' ); ?>><?php esc_html_e( 'Scheduled', 'youract-content-library' ); ?></option>
-						<option value="postponed" <?php selected( $values['event_status'], 'postponed' ); ?>><?php esc_html_e( 'Postponed', 'youract-content-library' ); ?></option>
-						<option value="cancelled" <?php selected( $values['event_status'], 'cancelled' ); ?>><?php esc_html_e( 'Cancelled', 'youract-content-library' ); ?></option>
-						<option value="completed" <?php selected( $values['event_status'], 'completed' ); ?>><?php esc_html_e( 'Completed', 'youract-content-library' ); ?></option>
-					</select>
-				</p>
 			</section>
 
 			<section class="youract-meta-group" aria-labelledby="youract-event-format-group-label">
@@ -323,20 +305,6 @@ class Admin_Event {
 					<label for="youract_event_url"><strong><?php esc_html_e( 'Official event URL', 'youract-content-library' ); ?></strong></label><br />
 					<input id="youract_event_url" name="youract_event[event_url]" type="url" class="widefat" value="<?php echo esc_attr( $values['event_url'] ); ?>" />
 				</p>
-			</section>
-
-			<section class="youract-meta-group" aria-labelledby="youract-event-registration-group-label">
-				<h3 id="youract-event-registration-group-label"><?php esc_html_e( 'Registration', 'youract-content-library' ); ?></h3>
-				<div class="youract-two-col">
-					<p>
-						<label for="youract_registration_deadline_date"><strong><?php esc_html_e( 'Registration deadline date', 'youract-content-library' ); ?></strong></label><br />
-						<input id="youract_registration_deadline_date" name="youract_event[registration_deadline_date]" type="date" value="<?php echo esc_attr( $values['registration_deadline_date'] ); ?>" />
-					</p>
-					<p>
-						<label for="youract_registration_deadline_time"><strong><?php esc_html_e( 'Registration deadline time', 'youract-content-library' ); ?></strong></label><br />
-						<input id="youract_registration_deadline_time" name="youract_event[registration_deadline_time]" type="time" value="<?php echo esc_attr( $values['registration_deadline_time'] ); ?>" />
-					</p>
-				</div>
 			</section>
 		</div>
 		<?php
@@ -375,7 +343,7 @@ class Admin_Event {
 			$timezone = Utils::get_default_timezone();
 		}
 		if ( ! Utils::is_valid_timezone( $timezone ) ) {
-			$errors[] = __( 'Event time zone must be a valid IANA time-zone value.', 'youract-content-library' );
+			$errors[] = __( 'Event time zone must be valid.', 'youract-content-library' );
 		} else {
 			update_post_meta( $post_id, '_youract_event_timezone', $timezone );
 		}
@@ -390,17 +358,9 @@ class Admin_Event {
 			$errors[] = __( 'Event format must be In-person, Online, or Hybrid.', 'youract-content-library' );
 		}
 
-		$status = sanitize_key( $input['event_status'] ?? 'scheduled' );
-		if ( in_array( $status, array( 'scheduled', 'postponed', 'cancelled', 'completed' ), true ) ) {
-			update_post_meta( $post_id, '_youract_event_status', $status );
-		} else {
-			$errors[] = __( 'Event status must be Scheduled, Postponed, Cancelled, or Completed.', 'youract-content-library' );
-		}
-
 		$this->save_url_field( $post_id, '_youract_event_url', $input['event_url'] ?? '', __( 'Official event URL must be a valid URL.', 'youract-content-library' ), $errors );
 
 		$this->save_event_datetimes( $post_id, $input, $timezone, $all_day, $errors );
-		$this->save_deadline_datetime( $post_id, $input, $timezone, 'registration_deadline', '_youract_registration_deadline_utc', __( 'Registration deadline date and time must both be provided and valid.', 'youract-content-library' ), $errors );
 
 		if ( ! empty( $errors ) ) {
 			$this->store_form_state(

@@ -83,7 +83,7 @@ class Structured_Data {
 			$timezone = Utils::get_default_timezone();
 		}
 
-		$tz_obj     = new DateTimeZone( $timezone );
+		$tz_obj     = Utils::get_timezone_object( $timezone );
 		$start_date = ( new DateTimeImmutable( '@' . $start_utc ) )->setTimezone( $tz_obj )->format( DATE_ATOM );
 		$end_date   = '';
 

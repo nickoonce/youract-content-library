@@ -3,7 +3,7 @@
  * Plugin Name:       Your ACT Content Library
  * Plugin URI:        https://youract.net
  * Description:       Structured Resources and Events content library for YourACT.net.
- * Version:           1.0.6
+ * Version:           1.0.7
  * Requires at least: 6.7
  * Requires PHP:      8.1
  * Author:            YourACT.net
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'YOURACT_CONTENT_LIBRARY_VERSION' ) ) {
-	define( 'YOURACT_CONTENT_LIBRARY_VERSION', '1.0.6' );
+	define( 'YOURACT_CONTENT_LIBRARY_VERSION', '1.0.7' );
 }
 
 if ( ! defined( 'YOURACT_CONTENT_LIBRARY_FILE' ) ) {

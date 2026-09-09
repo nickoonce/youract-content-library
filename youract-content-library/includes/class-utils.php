@@ -26,10 +26,18 @@ class Utils {
 	 * @return string
 	 */
 	public static function get_default_timezone(): string {
-		$timezone = wp_timezone_string();
+		$timezone = trim( (string) wp_timezone_string() );
 
 		if ( self::is_valid_timezone( $timezone ) ) {
 			return $timezone;
+		}
+
+		$gmt_offset = get_option( 'gmt_offset' );
+		if ( is_numeric( $gmt_offset ) ) {
+			$offset_value = (string) $gmt_offset;
+			if ( self::is_valid_timezone( $offset_value ) ) {
+				return $offset_value;
+			}
 		}
 
 		return 'UTC';
@@ -42,11 +50,27 @@ class Utils {
 	 * @return bool
 	 */
 	public static function is_valid_timezone( string $timezone ): bool {
-		if ( '' === $timezone ) {
-			return false;
+		return null !== self::create_timezone_object( $timezone );
+	}
+
+	/**
+	 * Returns a usable DateTimeZone object with safe fallback behavior.
+	 *
+	 * @param string $timezone Timezone identifier or offset.
+	 * @return DateTimeZone
+	 */
+	public static function get_timezone_object( string $timezone ): DateTimeZone {
+		$timezone_object = self::create_timezone_object( $timezone );
+		if ( $timezone_object instanceof DateTimeZone ) {
+			return $timezone_object;
 		}
 
-		return in_array( $timezone, timezone_identifiers_list(), true );
+		$default_timezone = self::create_timezone_object( self::get_default_timezone() );
+		if ( $default_timezone instanceof DateTimeZone ) {
+			return $default_timezone;
+		}
+
+		return new DateTimeZone( 'UTC' );
 	}
 
 	/**
@@ -58,7 +82,8 @@ class Utils {
 	 * @return int|null
 	 */
 	public static function local_datetime_to_utc( string $date, string $time, string $timezone ): ?int {
-		if ( ! self::is_valid_timezone( $timezone ) ) {
+		$tz = self::create_timezone_object( $timezone );
+		if ( ! ( $tz instanceof DateTimeZone ) ) {
 			return null;
 		}
 
@@ -73,7 +98,6 @@ class Utils {
 		$combined = $date . ' ' . $time;
 
 		try {
-			$tz      = new DateTimeZone( $timezone );
 			$parsed  = DateTimeImmutable::createFromFormat( $format, $combined, $tz );
 			$errors  = DateTimeImmutable::getLastErrors();
 			$invalid = false;
@@ -125,7 +149,15 @@ class Utils {
 	 * @return array<string, string>
 	 */
 	public static function utc_to_local_inputs( int $timestamp, string $timezone ): array {
-		if ( $timestamp <= 0 || ! self::is_valid_timezone( $timezone ) ) {
+		if ( $timestamp <= 0 ) {
+			return array(
+				'date' => '',
+				'time' => '',
+			);
+		}
+
+		$tz = self::create_timezone_object( $timezone );
+		if ( ! ( $tz instanceof DateTimeZone ) ) {
 			return array(
 				'date' => '',
 				'time' => '',
@@ -134,7 +166,7 @@ class Utils {
 
 		try {
 			$utc_dt = new DateTimeImmutable( '@' . $timestamp );
-			$local  = $utc_dt->setTimezone( new DateTimeZone( $timezone ) );
+			$local  = $utc_dt->setTimezone( $tz );
 
 			return array(
 				'date' => $local->format( 'Y-m-d' ),
@@ -145,6 +177,75 @@ class Utils {
 				'date' => '',
 				'time' => '',
 			);
+		}
+	}
+
+	/**
+	 * Attempts to create a DateTimeZone from IANA or WP-style UTC offset strings.
+	 *
+	 * @param string $timezone Raw timezone string.
+	 * @return DateTimeZone|null
+	 */
+	private static function create_timezone_object( string $timezone ): ?DateTimeZone {
+		$timezone = trim( $timezone );
+		if ( '' === $timezone ) {
+			return null;
+		}
+
+		try {
+			return new DateTimeZone( $timezone );
+		} catch ( Exception $exception ) {
+			// Try normalized offset variants below.
+		}
+
+		if ( preg_match( '/^UTC([+-])(\d{1,2})(?::?(\d{2}))?$/i', $timezone, $matches ) ) {
+			$sign    = (string) $matches[1];
+			$hours   = (int) $matches[2];
+			$minutes = isset( $matches[3] ) && '' !== $matches[3] ? (int) $matches[3] : 0;
+			return self::create_from_offset_parts( $sign, $hours, $minutes );
+		}
+
+		if ( preg_match( '/^[+-]?(?:\d{1,2})(?:\.\d+)?$/', $timezone ) ) {
+			$offset = (float) $timezone;
+			$sign   = $offset < 0 ? '-' : '+';
+			$abs    = abs( $offset );
+			$hours  = (int) floor( $abs );
+			$minutes = (int) round( ( $abs - $hours ) * 60 );
+
+			if ( 60 === $minutes ) {
+				$hours  += 1;
+				$minutes = 0;
+			}
+
+			return self::create_from_offset_parts( $sign, $hours, $minutes );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Builds a DateTimeZone object from validated offset parts.
+	 *
+	 * @param string $sign    Offset sign (+ or -).
+	 * @param int    $hours   Offset hours.
+	 * @param int    $minutes Offset minutes.
+	 * @return DateTimeZone|null
+	 */
+	private static function create_from_offset_parts( string $sign, int $hours, int $minutes ): ?DateTimeZone {
+		if ( ! in_array( $sign, array( '+', '-' ), true ) ) {
+			return null;
+		}
+
+		if ( $hours < 0 || $hours > 14 || $minutes < 0 || $minutes > 59 ) {
+			return null;
+		}
+
+		$offset = sprintf( '%s%02d:%02d', $sign, $hours, $minutes );
+
+		try {
+			return new DateTimeZone( $offset );
+		} catch ( Exception $exception ) {
+			return null;
 		}
 	}
 

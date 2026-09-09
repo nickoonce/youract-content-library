@@ -309,6 +309,7 @@ class Renderer {
 		$date_time_format = (string) apply_filters( 'youract_datetime_format', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		$date_only_format = (string) apply_filters( 'youract_date_format', get_option( 'date_format' ) );
 		$time_only_format = (string) apply_filters( 'youract_time_format', get_option( 'time_format' ) );
+		$pst_timezone = new DateTimeZone( 'America/Los_Angeles' );
 
 		$result = array(
 			'start_iso'    => '',
@@ -321,6 +322,7 @@ class Renderer {
 			'is_same_day'     => false,
 			'timezone'     => $tz,
 			'timezone_abbr'=> '',
+			'pst_note'     => '',
 			'all_day'      => $all_day,
 		);
 
@@ -328,7 +330,7 @@ class Renderer {
 			return $result;
 		}
 
-		$local_tz = new DateTimeZone( $tz );
+		$local_tz = Utils::get_timezone_object( $tz );
 		$start_dt = ( new DateTimeImmutable( '@' . $start_utc ) )->setTimezone( $local_tz );
 
 		$result['start_iso']     = $start_dt->format( DATE_ATOM );
@@ -336,9 +338,11 @@ class Renderer {
 		$result['start_date_text'] = wp_date( $date_only_format, $start_utc, $local_tz );
 		$result['start_time_text'] = wp_date( $time_only_format, $start_utc, $local_tz );
 		$result['timezone_abbr'] = $start_dt->format( 'T' );
+		$pst_start_text = wp_date( $date_time_format, $start_utc, $pst_timezone );
 
 		if ( $all_day ) {
 			$result['start_text'] = wp_date( $date_only_format, $start_utc, $local_tz );
+			$pst_start_text       = wp_date( $date_only_format, $start_utc, $pst_timezone );
 		}
 
 		if ( $end_utc > 0 ) {
@@ -347,11 +351,22 @@ class Renderer {
 			$result['end_text'] = wp_date( $date_time_format, $end_utc, $local_tz );
 			$result['end_time_text'] = wp_date( $time_only_format, $end_utc, $local_tz );
 			$result['is_same_day'] = $start_dt->format( 'Y-m-d' ) === $end_dt->format( 'Y-m-d' );
+			$pst_end_dt           = ( new DateTimeImmutable( '@' . $end_utc ) )->setTimezone( $pst_timezone );
+			$pst_same_day         = $start_dt->setTimezone( $pst_timezone )->format( 'Y-m-d' ) === $pst_end_dt->format( 'Y-m-d' );
+			$pst_end_text         = wp_date( $date_time_format, $end_utc, $pst_timezone );
 
 			if ( $all_day ) {
 				$result['end_text'] = wp_date( $date_only_format, $end_utc, $local_tz );
 				$result['end_time_text'] = '';
+				$pst_end_text = wp_date( $date_only_format, $end_utc, $pst_timezone );
+				$result['pst_note'] = $pst_start_text === $pst_end_text ? $pst_start_text : $pst_start_text . ' to ' . $pst_end_text;
+			} elseif ( $pst_same_day ) {
+				$result['pst_note'] = wp_date( $date_only_format, $start_utc, $pst_timezone ) . ' ' . wp_date( $time_only_format, $start_utc, $pst_timezone ) . ' to ' . wp_date( $time_only_format, $end_utc, $pst_timezone );
+			} else {
+				$result['pst_note'] = $pst_start_text . ' to ' . $pst_end_text;
 			}
+		} else {
+			$result['pst_note'] = $pst_start_text;
 		}
 
 		return $result;

@@ -134,9 +134,6 @@ class Renderer {
 			'status_label'    => $this->event_status_label( $status ),
 			'format'          => $format,
 			'format_label'    => $this->event_format_label( $format ),
-			'venue'           => (string) get_post_meta( $post_id, '_youract_event_venue', true ),
-			'address'         => (string) get_post_meta( $post_id, '_youract_event_address', true ),
-			'organizer'       => (string) get_post_meta( $post_id, '_youract_event_organizer', true ),
 			'event_url'       => (string) get_post_meta( $post_id, '_youract_event_url', true ),
 			'timezone'        => $timezone,
 			'timing'          => $timing,
@@ -311,12 +308,17 @@ class Renderer {
 		$tz = Utils::is_valid_timezone( $timezone ) ? $timezone : Utils::get_default_timezone();
 		$date_time_format = (string) apply_filters( 'youract_datetime_format', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		$date_only_format = (string) apply_filters( 'youract_date_format', get_option( 'date_format' ) );
+		$time_only_format = (string) apply_filters( 'youract_time_format', get_option( 'time_format' ) );
 
 		$result = array(
 			'start_iso'    => '',
 			'end_iso'      => '',
 			'start_text'   => '',
 			'end_text'     => '',
+			'start_date_text' => '',
+			'start_time_text' => '',
+			'end_time_text'   => '',
+			'is_same_day'     => false,
 			'timezone'     => $tz,
 			'timezone_abbr'=> '',
 			'all_day'      => $all_day,
@@ -331,6 +333,8 @@ class Renderer {
 
 		$result['start_iso']     = $start_dt->format( DATE_ATOM );
 		$result['start_text']    = wp_date( $date_time_format, $start_utc, $local_tz );
+		$result['start_date_text'] = wp_date( $date_only_format, $start_utc, $local_tz );
+		$result['start_time_text'] = wp_date( $time_only_format, $start_utc, $local_tz );
 		$result['timezone_abbr'] = $start_dt->format( 'T' );
 
 		if ( $all_day ) {
@@ -341,9 +345,12 @@ class Renderer {
 			$end_dt             = ( new DateTimeImmutable( '@' . $end_utc ) )->setTimezone( $local_tz );
 			$result['end_iso']  = $end_dt->format( DATE_ATOM );
 			$result['end_text'] = wp_date( $date_time_format, $end_utc, $local_tz );
+			$result['end_time_text'] = wp_date( $time_only_format, $end_utc, $local_tz );
+			$result['is_same_day'] = $start_dt->format( 'Y-m-d' ) === $end_dt->format( 'Y-m-d' );
 
 			if ( $all_day ) {
 				$result['end_text'] = wp_date( $date_only_format, $end_utc, $local_tz );
+				$result['end_time_text'] = '';
 			}
 		}
 
@@ -392,7 +399,7 @@ class Renderer {
 			(bool) get_post_meta( $post_id, '_youract_event_all_day', true )
 		);
 
-		$disclaimer = __( 'This event is shared for community information. Please confirm current details and accommodation arrangements with the event organizer.', 'youract-content-library' );
+		$disclaimer = __( 'This event is shared for community information. Please confirm current details with the event host before attending.', 'youract-content-library' );
 		$disclaimer = apply_filters( 'youract_external_event_disclaimer', $disclaimer, $post_id );
 
 		$data = array(
@@ -404,17 +411,8 @@ class Renderer {
 			'timezone'                   => $timezone,
 			'format'                     => (string) get_post_meta( $post_id, '_youract_event_format', true ),
 			'format_label'               => $this->event_format_label( (string) get_post_meta( $post_id, '_youract_event_format', true ) ),
-			'venue'                      => (string) get_post_meta( $post_id, '_youract_event_venue', true ),
-			'address'                    => (string) get_post_meta( $post_id, '_youract_event_address', true ),
-			'organizer'                  => (string) get_post_meta( $post_id, '_youract_event_organizer', true ),
-			'registration_url'           => (string) get_post_meta( $post_id, '_youract_registration_url', true ),
 			'registration_deadline_utc'  => (int) get_post_meta( $post_id, '_youract_registration_deadline_utc', true ),
-			'event_cost'                 => (string) get_post_meta( $post_id, '_youract_event_cost', true ),
-			'accessibility_information'  => (string) get_post_meta( $post_id, '_youract_accessibility_information', true ),
-			'accommodation_contact'      => (string) get_post_meta( $post_id, '_youract_accommodation_contact', true ),
-			'accommodation_deadline_utc' => (int) get_post_meta( $post_id, '_youract_accommodation_deadline_utc', true ),
 			'event_url'                  => (string) get_post_meta( $post_id, '_youract_event_url', true ),
-			'last_verified'              => (string) get_post_meta( $post_id, '_youract_last_verified', true ),
 			'event_types'                => $this->term_names( $post_id, 'act_event_type' ),
 			'topics'                     => $this->term_names( $post_id, 'act_topic' ),
 			'geographies'                => $this->term_names( $post_id, 'act_geography' ),

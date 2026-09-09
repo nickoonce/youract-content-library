@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -119,18 +119,9 @@ Server-rendered block for the Site Editor and template editor.
 - Event timezone (IANA)
 - All-day flag
 - Event format: in-person, online, hybrid
-- Venue
-- Address / connection details
-- Organizer
 - Event URL
-- Registration URL
 - Registration deadline UTC timestamp (stored)
-- Event cost
-- Accessibility information
-- Accommodation contact
-- Accommodation deadline UTC timestamp (stored)
 - Event status: scheduled, postponed, cancelled, completed
-- Last verified (YYYY-MM-DD)
 
 Admin UI stores date/time input in selected event timezone and converts to UTC at save.
 
@@ -213,3 +204,9 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 = 1.0.4 =
 
 - Added explicit editor-side fallback block registration for environments that do not surface metadata-only dynamic blocks in inserter.
+
+= 1.0.5 =
+
+- Reduced the Event content model by removing venue, address, organizer, registration URL, cost, accessibility, accommodation, and last verified fields.
+- Updated event date display so single-day ranges do not repeat the date.
+- Applied upcoming-first ordering to frontend Event archive loops.

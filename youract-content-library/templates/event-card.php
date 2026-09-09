@@ -26,10 +26,16 @@ $timing = isset( $event['timing'] ) && is_array( $event['timing'] ) ? $event['ti
 	<?php if ( ! empty( $timing['start_text'] ) ) : ?>
 		<p>
 			<strong><?php esc_html_e( 'Date and time:', 'youract-content-library' ); ?></strong>
-			<time datetime="<?php echo esc_attr( (string) $timing['start_iso'] ); ?>"><?php echo esc_html( (string) $timing['start_text'] ); ?></time>
-			<?php if ( ! empty( $timing['end_text'] ) ) : ?>
+			<?php if ( ! empty( $timing['end_text'] ) && empty( $timing['all_day'] ) && ! empty( $timing['is_same_day'] ) && ! empty( $timing['start_date_text'] ) && ! empty( $timing['start_time_text'] ) && ! empty( $timing['end_time_text'] ) ) : ?>
+				<time datetime="<?php echo esc_attr( (string) $timing['start_iso'] ); ?>"><?php echo esc_html( (string) $timing['start_date_text'] . ' ' . (string) $timing['start_time_text'] ); ?></time>
 				<?php esc_html_e( ' to ', 'youract-content-library' ); ?>
-				<time datetime="<?php echo esc_attr( (string) $timing['end_iso'] ); ?>"><?php echo esc_html( (string) $timing['end_text'] ); ?></time>
+				<time datetime="<?php echo esc_attr( (string) $timing['end_iso'] ); ?>"><?php echo esc_html( (string) $timing['end_time_text'] ); ?></time>
+			<?php else : ?>
+				<time datetime="<?php echo esc_attr( (string) $timing['start_iso'] ); ?>"><?php echo esc_html( (string) $timing['start_text'] ); ?></time>
+				<?php if ( ! empty( $timing['end_text'] ) ) : ?>
+					<?php esc_html_e( ' to ', 'youract-content-library' ); ?>
+					<time datetime="<?php echo esc_attr( (string) $timing['end_iso'] ); ?>"><?php echo esc_html( (string) $timing['end_text'] ); ?></time>
+				<?php endif; ?>
 			<?php endif; ?>
 			(<?php echo esc_html( (string) ( $timing['timezone_abbr'] ?: $timing['timezone'] ) ); ?>)
 			<?php if ( ! empty( $timing['all_day'] ) ) : ?>
@@ -42,14 +48,6 @@ $timing = isset( $event['timing'] ) && is_array( $event['timing'] ) ? $event['ti
 		<?php if ( ! empty( $event['format_label'] ) ) : ?>
 			<dt><?php esc_html_e( 'Format', 'youract-content-library' ); ?></dt>
 			<dd><?php echo esc_html( (string) $event['format_label'] ); ?></dd>
-		<?php endif; ?>
-		<?php if ( ! empty( $event['venue'] ) ) : ?>
-			<dt><?php esc_html_e( 'Venue or platform', 'youract-content-library' ); ?></dt>
-			<dd><?php echo esc_html( (string) $event['venue'] ); ?></dd>
-		<?php endif; ?>
-		<?php if ( ! empty( $event['organizer'] ) ) : ?>
-			<dt><?php esc_html_e( 'Organizer', 'youract-content-library' ); ?></dt>
-			<dd><?php echo esc_html( (string) $event['organizer'] ); ?></dd>
 		<?php endif; ?>
 		<?php if ( ! empty( $event['event_types'] ) && is_array( $event['event_types'] ) ) : ?>
 			<dt><?php esc_html_e( 'Event type', 'youract-content-library' ); ?></dt>

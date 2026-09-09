@@ -229,12 +229,10 @@ class Admin_Event {
 		$start_utc = (int) get_post_meta( $post->ID, '_youract_event_start_utc', true );
 		$end_utc   = (int) get_post_meta( $post->ID, '_youract_event_end_utc', true );
 		$reg_utc   = (int) get_post_meta( $post->ID, '_youract_registration_deadline_utc', true );
-		$acc_utc   = (int) get_post_meta( $post->ID, '_youract_accommodation_deadline_utc', true );
 
 		$start_local = Utils::utc_to_local_inputs( $start_utc, $timezone );
 		$end_local   = Utils::utc_to_local_inputs( $end_utc, $timezone );
 		$reg_local   = Utils::utc_to_local_inputs( $reg_utc, $timezone );
-		$acc_local   = Utils::utc_to_local_inputs( $acc_utc, $timezone );
 
 		$values = array(
 			'event_timezone'             => $timezone,
@@ -245,19 +243,9 @@ class Admin_Event {
 			'event_end_time'             => $this->get_form_value( $state, 'event_end_time', $end_local['time'] ),
 			'event_status'               => $this->get_form_value( $state, 'event_status', (string) get_post_meta( $post->ID, '_youract_event_status', true ) ),
 			'event_format'               => $this->get_form_value( $state, 'event_format', (string) get_post_meta( $post->ID, '_youract_event_format', true ) ),
-			'event_venue'                => $this->get_form_value( $state, 'event_venue', (string) get_post_meta( $post->ID, '_youract_event_venue', true ) ),
-			'event_address'              => $this->get_form_value( $state, 'event_address', (string) get_post_meta( $post->ID, '_youract_event_address', true ) ),
-			'event_organizer'            => $this->get_form_value( $state, 'event_organizer', (string) get_post_meta( $post->ID, '_youract_event_organizer', true ) ),
 			'event_url'                  => $this->get_form_value( $state, 'event_url', (string) get_post_meta( $post->ID, '_youract_event_url', true ) ),
-			'registration_url'           => $this->get_form_value( $state, 'registration_url', (string) get_post_meta( $post->ID, '_youract_registration_url', true ) ),
 			'registration_deadline_date' => $this->get_form_value( $state, 'registration_deadline_date', $reg_local['date'] ),
 			'registration_deadline_time' => $this->get_form_value( $state, 'registration_deadline_time', $reg_local['time'] ),
-			'event_cost'                 => $this->get_form_value( $state, 'event_cost', (string) get_post_meta( $post->ID, '_youract_event_cost', true ) ),
-			'accessibility_information'  => $this->get_form_value( $state, 'accessibility_information', (string) get_post_meta( $post->ID, '_youract_accessibility_information', true ) ),
-			'accommodation_contact'      => $this->get_form_value( $state, 'accommodation_contact', (string) get_post_meta( $post->ID, '_youract_accommodation_contact', true ) ),
-			'accommodation_deadline_date'=> $this->get_form_value( $state, 'accommodation_deadline_date', $acc_local['date'] ),
-			'accommodation_deadline_time'=> $this->get_form_value( $state, 'accommodation_deadline_time', $acc_local['time'] ),
-			'last_verified'              => $this->get_form_value( $state, 'last_verified', (string) get_post_meta( $post->ID, '_youract_last_verified', true ) ),
 		);
 
 		if ( '' === $values['event_format'] ) {
@@ -317,8 +305,8 @@ class Admin_Event {
 				</p>
 			</section>
 
-			<section class="youract-meta-group" aria-labelledby="youract-event-format-location-group-label">
-				<h3 id="youract-event-format-location-group-label"><?php esc_html_e( 'Format and location', 'youract-content-library' ); ?></h3>
+			<section class="youract-meta-group" aria-labelledby="youract-event-format-group-label">
+				<h3 id="youract-event-format-group-label"><?php esc_html_e( 'Format', 'youract-content-library' ); ?></h3>
 				<p>
 					<label for="youract_event_format"><strong><?php esc_html_e( 'Event format', 'youract-content-library' ); ?></strong></label><br />
 					<select id="youract_event_format" name="youract_event[event_format]">
@@ -327,22 +315,10 @@ class Admin_Event {
 						<option value="hybrid" <?php selected( $values['event_format'], 'hybrid' ); ?>><?php esc_html_e( 'Hybrid', 'youract-content-library' ); ?></option>
 					</select>
 				</p>
-				<p>
-					<label for="youract_event_venue"><strong><?php esc_html_e( 'Venue or platform', 'youract-content-library' ); ?></strong></label><br />
-					<input id="youract_event_venue" name="youract_event[event_venue]" type="text" class="widefat" value="<?php echo esc_attr( $values['event_venue'] ); ?>" />
-				</p>
-				<p>
-					<label for="youract_event_address"><strong><?php esc_html_e( 'Address or connection details', 'youract-content-library' ); ?></strong></label><br />
-					<textarea id="youract_event_address" name="youract_event[event_address]" class="widefat" rows="3"><?php echo esc_textarea( $values['event_address'] ); ?></textarea>
-				</p>
 			</section>
 
 			<section class="youract-meta-group" aria-labelledby="youract-event-links-group-label">
-				<h3 id="youract-event-links-group-label"><?php esc_html_e( 'Organizer and external links', 'youract-content-library' ); ?></h3>
-				<p>
-					<label for="youract_event_organizer"><strong><?php esc_html_e( 'Organizer', 'youract-content-library' ); ?></strong></label><br />
-					<input id="youract_event_organizer" name="youract_event[event_organizer]" type="text" class="widefat" value="<?php echo esc_attr( $values['event_organizer'] ); ?>" />
-				</p>
+				<h3 id="youract-event-links-group-label"><?php esc_html_e( 'External links', 'youract-content-library' ); ?></h3>
 				<p>
 					<label for="youract_event_url"><strong><?php esc_html_e( 'Official event URL', 'youract-content-library' ); ?></strong></label><br />
 					<input id="youract_event_url" name="youract_event[event_url]" type="url" class="widefat" value="<?php echo esc_attr( $values['event_url'] ); ?>" />
@@ -351,10 +327,6 @@ class Admin_Event {
 
 			<section class="youract-meta-group" aria-labelledby="youract-event-registration-group-label">
 				<h3 id="youract-event-registration-group-label"><?php esc_html_e( 'Registration', 'youract-content-library' ); ?></h3>
-				<p>
-					<label for="youract_registration_url"><strong><?php esc_html_e( 'Registration URL', 'youract-content-library' ); ?></strong></label><br />
-					<input id="youract_registration_url" name="youract_event[registration_url]" type="url" class="widefat" value="<?php echo esc_attr( $values['registration_url'] ); ?>" />
-				</p>
 				<div class="youract-two-col">
 					<p>
 						<label for="youract_registration_deadline_date"><strong><?php esc_html_e( 'Registration deadline date', 'youract-content-library' ); ?></strong></label><br />
@@ -365,41 +337,6 @@ class Admin_Event {
 						<input id="youract_registration_deadline_time" name="youract_event[registration_deadline_time]" type="time" value="<?php echo esc_attr( $values['registration_deadline_time'] ); ?>" />
 					</p>
 				</div>
-				<p>
-					<label for="youract_event_cost"><strong><?php esc_html_e( 'Cost', 'youract-content-library' ); ?></strong></label><br />
-					<input id="youract_event_cost" name="youract_event[event_cost]" type="text" class="widefat" value="<?php echo esc_attr( $values['event_cost'] ); ?>" />
-				</p>
-			</section>
-
-			<section class="youract-meta-group" aria-labelledby="youract-event-access-group-label">
-				<h3 id="youract-event-access-group-label"><?php esc_html_e( 'Accessibility and accommodations', 'youract-content-library' ); ?></h3>
-				<p>
-					<label for="youract_accessibility_information"><strong><?php esc_html_e( 'Accessibility information', 'youract-content-library' ); ?></strong></label><br />
-					<textarea id="youract_accessibility_information" name="youract_event[accessibility_information]" class="widefat" rows="4"><?php echo esc_textarea( $values['accessibility_information'] ); ?></textarea>
-				</p>
-				<p>
-					<label for="youract_accommodation_contact"><strong><?php esc_html_e( 'Accommodation contact', 'youract-content-library' ); ?></strong></label><br />
-					<input id="youract_accommodation_contact" name="youract_event[accommodation_contact]" type="text" class="widefat" value="<?php echo esc_attr( $values['accommodation_contact'] ); ?>" />
-				</p>
-				<div class="youract-two-col">
-					<p>
-						<label for="youract_accommodation_deadline_date"><strong><?php esc_html_e( 'Accommodation deadline date', 'youract-content-library' ); ?></strong></label><br />
-						<input id="youract_accommodation_deadline_date" name="youract_event[accommodation_deadline_date]" type="date" value="<?php echo esc_attr( $values['accommodation_deadline_date'] ); ?>" />
-					</p>
-					<p>
-						<label for="youract_accommodation_deadline_time"><strong><?php esc_html_e( 'Accommodation deadline time', 'youract-content-library' ); ?></strong></label><br />
-						<input id="youract_accommodation_deadline_time" name="youract_event[accommodation_deadline_time]" type="time" value="<?php echo esc_attr( $values['accommodation_deadline_time'] ); ?>" />
-					</p>
-				</div>
-			</section>
-
-			<section class="youract-meta-group" aria-labelledby="youract-event-verification-group-label">
-				<h3 id="youract-event-verification-group-label"><?php esc_html_e( 'Verification', 'youract-content-library' ); ?></h3>
-				<p>
-					<label for="youract_last_verified"><strong><?php esc_html_e( 'Last verified', 'youract-content-library' ); ?></strong></label><br />
-					<input id="youract_last_verified" name="youract_event[last_verified]" type="date" value="<?php echo esc_attr( $values['last_verified'] ); ?>" />
-					<span class="description"><?php esc_html_e( 'Use YYYY-MM-DD format.', 'youract-content-library' ); ?></span>
-				</p>
 			</section>
 		</div>
 		<?php
@@ -460,20 +397,10 @@ class Admin_Event {
 			$errors[] = __( 'Event status must be Scheduled, Postponed, Cancelled, or Completed.', 'youract-content-library' );
 		}
 
-		update_post_meta( $post_id, '_youract_event_venue', sanitize_text_field( $input['event_venue'] ?? '' ) );
-		update_post_meta( $post_id, '_youract_event_address', sanitize_textarea_field( $input['event_address'] ?? '' ) );
-		update_post_meta( $post_id, '_youract_event_organizer', sanitize_text_field( $input['event_organizer'] ?? '' ) );
-		update_post_meta( $post_id, '_youract_event_cost', sanitize_text_field( $input['event_cost'] ?? '' ) );
-		update_post_meta( $post_id, '_youract_accessibility_information', sanitize_textarea_field( $input['accessibility_information'] ?? '' ) );
-		update_post_meta( $post_id, '_youract_accommodation_contact', sanitize_text_field( $input['accommodation_contact'] ?? '' ) );
-
 		$this->save_url_field( $post_id, '_youract_event_url', $input['event_url'] ?? '', __( 'Official event URL must be a valid URL.', 'youract-content-library' ), $errors );
-		$this->save_url_field( $post_id, '_youract_registration_url', $input['registration_url'] ?? '', __( 'Registration URL must be a valid URL.', 'youract-content-library' ), $errors );
 
-		$this->save_verification_date( $post_id, $input, $errors );
 		$this->save_event_datetimes( $post_id, $input, $timezone, $all_day, $errors );
 		$this->save_deadline_datetime( $post_id, $input, $timezone, 'registration_deadline', '_youract_registration_deadline_utc', __( 'Registration deadline date and time must both be provided and valid.', 'youract-content-library' ), $errors );
-		$this->save_deadline_datetime( $post_id, $input, $timezone, 'accommodation_deadline', '_youract_accommodation_deadline_utc', __( 'Accommodation deadline date and time must both be provided and valid.', 'youract-content-library' ), $errors );
 
 		if ( ! empty( $errors ) ) {
 			$this->store_form_state(
@@ -624,29 +551,6 @@ class Admin_Event {
 		}
 
 		update_post_meta( $post_id, $meta_key, $deadline_utc );
-	}
-
-	/**
-	 * Saves verification date.
-	 *
-	 * @param int      $post_id Post ID.
-	 * @param string[] $input   Input values.
-	 * @param string[] $errors  Validation errors.
-	 * @return void
-	 */
-	private function save_verification_date( int $post_id, array $input, array &$errors ): void {
-		$last_verified = trim( $input['last_verified'] ?? '' );
-		if ( '' === $last_verified ) {
-			delete_post_meta( $post_id, '_youract_last_verified' );
-			return;
-		}
-
-		if ( ! Utils::is_valid_date( $last_verified ) ) {
-			$errors[] = __( 'Last verified must be a valid date in YYYY-MM-DD format.', 'youract-content-library' );
-			return;
-		}
-
-		update_post_meta( $post_id, '_youract_last_verified', $last_verified );
 	}
 
 	/**

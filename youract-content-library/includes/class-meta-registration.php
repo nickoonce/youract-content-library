@@ -93,7 +93,6 @@ class Meta_Registration {
 			'_youract_event_start_utc',
 			'_youract_event_end_utc',
 			'_youract_registration_deadline_utc',
-			'_youract_accommodation_deadline_utc',
 		);
 
 		foreach ( $timestamp_fields as $key ) {
@@ -126,16 +125,8 @@ class Meta_Registration {
 		);
 
 		$this->register_string_meta( 'act_event', '_youract_event_format', 'string', array( $this, 'sanitize_event_format' ) );
-		$this->register_string_meta( 'act_event', '_youract_event_venue', 'string', 'sanitize_text_field' );
-		$this->register_string_meta( 'act_event', '_youract_event_address', 'string', 'sanitize_textarea_field' );
-		$this->register_string_meta( 'act_event', '_youract_event_organizer', 'string', 'sanitize_text_field' );
 		$this->register_string_meta( 'act_event', '_youract_event_url', 'uri', array( $this, 'sanitize_url' ) );
-		$this->register_string_meta( 'act_event', '_youract_registration_url', 'uri', array( $this, 'sanitize_url' ) );
-		$this->register_string_meta( 'act_event', '_youract_event_cost', 'string', 'sanitize_text_field' );
-		$this->register_string_meta( 'act_event', '_youract_accessibility_information', 'string', 'sanitize_textarea_field' );
-		$this->register_string_meta( 'act_event', '_youract_accommodation_contact', 'string', 'sanitize_text_field' );
 		$this->register_string_meta( 'act_event', '_youract_event_status', 'string', array( $this, 'sanitize_event_status' ) );
-		$this->register_string_meta( 'act_event', '_youract_last_verified', 'string', array( $this, 'sanitize_date' ) );
 	}
 
 	/**

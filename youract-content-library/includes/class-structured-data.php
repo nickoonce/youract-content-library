@@ -118,14 +118,6 @@ class Structured_Data {
 			$data['eventAttendanceMode'] = $attendance_mode;
 		}
 
-		$organizer = (string) get_post_meta( $post_id, '_youract_event_organizer', true );
-		if ( '' !== $organizer ) {
-			$data['organizer'] = array(
-				'@type' => 'Organization',
-				'name'  => $organizer,
-			);
-		}
-
 		$location = $this->schema_location( $post_id, $format );
 		if ( ! empty( $location ) ) {
 			$data['location'] = $location;
@@ -175,8 +167,6 @@ class Structured_Data {
 	 * @return array<string, mixed>
 	 */
 	private function schema_location( int $post_id, string $format ): array {
-		$venue   = (string) get_post_meta( $post_id, '_youract_event_venue', true );
-		$address = (string) get_post_meta( $post_id, '_youract_event_address', true );
 		$url     = (string) get_post_meta( $post_id, '_youract_event_url', true );
 
 		if ( 'online' === $format ) {
@@ -190,36 +180,7 @@ class Structured_Data {
 			);
 		}
 
-		$physical_location = array();
-		if ( '' !== $venue || '' !== $address ) {
-			$physical_location = array(
-				'@type' => 'Place',
-			);
-
-			if ( '' !== $venue ) {
-				$physical_location['name'] = $venue;
-			}
-
-			if ( '' !== $address ) {
-				$physical_location['address'] = $address;
-			}
-		}
-
 		if ( 'hybrid' === $format ) {
-			if ( '' !== $url && ! empty( $physical_location ) ) {
-				return array(
-					$physical_location,
-					array(
-						'@type' => 'VirtualLocation',
-						'url'   => $url,
-					),
-				);
-			}
-
-			if ( ! empty( $physical_location ) ) {
-				return $physical_location;
-			}
-
 			if ( '' !== $url ) {
 				return array(
 					'@type' => 'VirtualLocation',
@@ -228,6 +189,6 @@ class Structured_Data {
 			}
 		}
 
-		return $physical_location;
+		return array();
 	}
 }

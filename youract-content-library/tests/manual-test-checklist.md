@@ -26,7 +26,7 @@
 - Create all-day Event and verify date-only behavior.
 - Create Event crossing midnight and verify end remains after start.
 - Create Event with end before start and verify validation error.
-- Create registration/accommodation deadlines and verify conversion and re-display.
+- Create a registration deadline and verify conversion and re-display.
 - Enter invalid deadline inputs and verify validation notice + preserved values.
 
 ## Status and Scope Logic

@@ -17,6 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Event_Query {
 
 	/**
+	 * Hook registrations.
+	 *
+	 * @return void
+	 */
+	public function register(): void {
+		add_action( 'pre_get_posts', array( $this, 'handle_frontend_event_archive_query' ) );
+	}
+
+	/**
 	 * Builds args for [youract_events].
 	 *
 	 * @param string $scope    upcoming|past|all.
@@ -155,5 +164,85 @@ class Event_Query {
 		 * @param array<string, mixed> $args Query args.
 		 */
 		return apply_filters( 'youract_upcoming_event_query_args', $args );
+	}
+
+	/**
+	 * Applies upcoming-first ordering to frontend Event archive loops.
+	 *
+	 * @param \WP_Query $query Main query.
+	 * @return void
+	 */
+	public function handle_frontend_event_archive_query( \WP_Query $query ): void {
+		if ( is_admin() || ! $query->is_main_query() ) {
+			return;
+		}
+
+		if ( ! is_post_type_archive( 'act_event' ) && ! is_tax( 'act_event_type' ) ) {
+			return;
+		}
+
+		$now = time();
+
+		$query->set( 'post_type', 'act_event' );
+		$query->set( 'post_status', 'publish' );
+		$query->set( 'ignore_sticky_posts', true );
+		$query->set( 'meta_key', '_youract_event_start_utc' );
+		$query->set( 'orderby', 'meta_value_num' );
+		$query->set( 'order', 'ASC' );
+		$query->set(
+			'meta_query',
+			array(
+				'relation' => 'AND',
+				array(
+					'relation' => 'OR',
+					array(
+						'key'     => '_youract_event_status',
+						'compare' => 'NOT EXISTS',
+					),
+					array(
+						'key'     => '_youract_event_status',
+						'value'   => array( 'cancelled', 'completed' ),
+						'compare' => 'NOT IN',
+					),
+				),
+				array(
+					'relation' => 'OR',
+					array(
+						'key'     => '_youract_event_end_utc',
+						'value'   => $now,
+						'compare' => '>=',
+						'type'    => 'NUMERIC',
+					),
+					array(
+						'relation' => 'AND',
+						array(
+							'key'     => '_youract_event_end_utc',
+							'compare' => 'NOT EXISTS',
+						),
+						array(
+							'key'     => '_youract_event_start_utc',
+							'value'   => $now,
+							'compare' => '>=',
+							'type'    => 'NUMERIC',
+						),
+					),
+					array(
+						'relation' => 'AND',
+						array(
+							'key'     => '_youract_event_end_utc',
+							'value'   => 0,
+							'compare' => '=',
+							'type'    => 'NUMERIC',
+						),
+						array(
+							'key'     => '_youract_event_start_utc',
+							'value'   => $now,
+							'compare' => '>=',
+							'type'    => 'NUMERIC',
+						),
+					),
+				),
+			)
+		);
 	}
 }

@@ -83,10 +83,7 @@ class Admin_Event {
 	public function render_column( string $column, int $post_id ): void {
 		if ( 'event_start' === $column ) {
 			$start_utc = (int) get_post_meta( $post_id, '_youract_event_start_utc', true );
-			$timezone  = (string) get_post_meta( $post_id, '_youract_event_timezone', true );
-			if ( ! Utils::is_valid_timezone( $timezone ) ) {
-				$timezone = Utils::get_default_timezone();
-			}
+			$timezone  = Utils::get_event_timezone();
 
 			if ( $start_utc <= 0 ) {
 				echo '&#8212;';
@@ -99,10 +96,7 @@ class Admin_Event {
 
 		if ( 'event_end' === $column ) {
 			$end_utc  = (int) get_post_meta( $post_id, '_youract_event_end_utc', true );
-			$timezone = (string) get_post_meta( $post_id, '_youract_event_timezone', true );
-			if ( ! Utils::is_valid_timezone( $timezone ) ) {
-				$timezone = Utils::get_default_timezone();
-			}
+			$timezone = Utils::get_event_timezone();
 
 			if ( $end_utc <= 0 ) {
 				echo '&#8212;';
@@ -220,11 +214,7 @@ class Admin_Event {
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 
 		$state = $this->get_form_state( $post->ID );
-
-		$timezone = $this->get_form_value( $state, 'event_timezone', (string) get_post_meta( $post->ID, '_youract_event_timezone', true ) );
-		if ( '' === $timezone || ! Utils::is_valid_timezone( $timezone ) ) {
-			$timezone = Utils::get_default_timezone();
-		}
+		$timezone = Utils::get_event_timezone();
 
 		$start_utc = (int) get_post_meta( $post->ID, '_youract_event_start_utc', true );
 		$end_utc   = (int) get_post_meta( $post->ID, '_youract_event_end_utc', true );
@@ -233,7 +223,6 @@ class Admin_Event {
 		$end_local   = Utils::utc_to_local_inputs( $end_utc, $timezone );
 
 		$values = array(
-			'event_timezone'             => $timezone,
 			'event_all_day'              => (bool) $this->get_form_value( $state, 'event_all_day', (bool) get_post_meta( $post->ID, '_youract_event_all_day', true ) ),
 			'event_start_date'           => $this->get_form_value( $state, 'event_start_date', $start_local['date'] ),
 			'event_start_time'           => $this->get_form_value( $state, 'event_start_time', $start_local['time'] ),
@@ -255,9 +244,9 @@ class Admin_Event {
 			<section class="youract-meta-group" aria-labelledby="youract-event-datetime-group-label">
 				<h3 id="youract-event-datetime-group-label"><?php esc_html_e( 'Date and time', 'youract-content-library' ); ?></h3>
 				<p>
-					<label for="youract_event_timezone"><strong><?php esc_html_e( 'Event time zone', 'youract-content-library' ); ?></strong></label><br />
-					<?php echo wp_timezone_choice( $values['event_timezone'], 'youract_event[event_timezone]' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-					<span class="description"><?php esc_html_e( 'Times below are entered and displayed in this time zone.', 'youract-content-library' ); ?></span>
+					<strong><?php esc_html_e( 'Event time zone', 'youract-content-library' ); ?></strong><br />
+					<span><?php esc_html_e( 'Pacific Time (PST)', 'youract-content-library' ); ?></span><br />
+					<span class="description"><?php esc_html_e( 'Times below are entered and displayed in Pacific Time.', 'youract-content-library' ); ?></span>
 				</p>
 				<p>
 					<label for="youract_event_all_day">
@@ -338,15 +327,8 @@ class Admin_Event {
 		$input     = array_map( 'strval', $raw_input );
 		$errors    = array();
 
-		$timezone = trim( $input['event_timezone'] ?? '' );
-		if ( '' === $timezone ) {
-			$timezone = Utils::get_default_timezone();
-		}
-		if ( ! Utils::is_valid_timezone( $timezone ) ) {
-			$errors[] = __( 'Event time zone must be valid.', 'youract-content-library' );
-		} else {
-			update_post_meta( $post_id, '_youract_event_timezone', $timezone );
-		}
+		$timezone = Utils::get_event_timezone();
+		update_post_meta( $post_id, '_youract_event_timezone', $timezone );
 
 		$all_day = ! empty( $input['event_all_day'] );
 		update_post_meta( $post_id, '_youract_event_all_day', $all_day ? 1 : 0 );

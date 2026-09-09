@@ -21,6 +21,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Utils {
 
 	/**
+	 * Returns the fixed event timezone used for admin entry and frontend display.
+	 *
+	 * @return string
+	 */
+	public static function get_event_timezone(): string {
+		return (string) apply_filters( 'youract_event_timezone', 'America/Los_Angeles' );
+	}
+
+	/**
 	 * Returns a valid default IANA timezone.
 	 *
 	 * @return string

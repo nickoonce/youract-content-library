@@ -22,10 +22,6 @@ $hide_status = ! empty( $event['hide_status'] );
 $hide_disclaimer = ! empty( $event['hide_disclaimer'] );
 $event_url_label = isset( $event['event_url_label'] ) && is_string( $event['event_url_label'] ) ? $event['event_url_label'] : __( 'Official event link', 'youract-content-library' );
 $event_url_use_raw_text = ! empty( $event['event_url_use_raw_text'] );
-$timezone_display = isset( $timing['timezone'] ) && '' !== (string) $timing['timezone']
-	? (string) $timing['timezone']
-	: ( isset( $event['timezone'] ) ? (string) $event['timezone'] : '' );
-$pst_note = isset( $timing['pst_note'] ) ? (string) $timing['pst_note'] : '';
 ?>
 <section class="youract-details youract-event-details<?php echo $is_compact ? ' is-compact' : ''; ?>" <?php echo $hide_heading ? 'aria-label="' . esc_attr__( 'Event details', 'youract-content-library' ) . '"' : 'aria-labelledby="' . esc_attr( $heading_id ) . '"'; ?>>
 	<?php if ( ! $hide_heading ) : ?>
@@ -54,12 +50,7 @@ $pst_note = isset( $timing['pst_note'] ) ? (string) $timing['pst_note'] : '';
 				<?php if ( ! empty( $timing['all_day'] ) ) : ?>
 					<?php esc_html_e( ' (All day)', 'youract-content-library' ); ?>
 				<?php endif; ?>
-				<?php if ( '' !== $timezone_display ) : ?>
-					<?php echo ' ' . esc_html( $timezone_display ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				<?php endif; ?>
-				<?php if ( '' !== $pst_note ) : ?>
-					<?php echo ' (' . esc_html__( 'PST:', 'youract-content-library' ) . ' ' . esc_html( $pst_note ) . ')'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				<?php endif; ?>
+				<?php esc_html_e( ' PST', 'youract-content-library' ); ?>
 			</dd>
 		<?php endif; ?>
 

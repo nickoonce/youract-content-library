@@ -40,12 +40,7 @@ $timing = isset( $event['timing'] ) && is_array( $event['timing'] ) ? $event['ti
 			<?php if ( ! empty( $timing['all_day'] ) ) : ?>
 				<?php esc_html_e( ' - All day', 'youract-content-library' ); ?>
 			<?php endif; ?>
-			<?php if ( ! empty( $timing['timezone'] ) ) : ?>
-				<?php echo ' ' . esc_html( (string) $timing['timezone'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php endif; ?>
-			<?php if ( ! empty( $timing['pst_note'] ) ) : ?>
-				<?php echo ' (' . esc_html__( 'PST:', 'youract-content-library' ) . ' ' . esc_html( (string) $timing['pst_note'] ) . ')'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php endif; ?>
+			<?php esc_html_e( ' PST', 'youract-content-library' ); ?>
 		</p>
 	<?php endif; ?>
 

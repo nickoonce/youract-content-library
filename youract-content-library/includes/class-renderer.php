@@ -8,7 +8,6 @@
 namespace YourACT\ContentLibrary;
 
 use DateTimeImmutable;
-use DateTimeZone;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -109,10 +108,7 @@ class Renderer {
 	public function render_event_card( int $post_id ): string {
 		$heading_id = $this->next_heading_id( 'event' );
 
-		$timezone = (string) get_post_meta( $post_id, '_youract_event_timezone', true );
-		if ( ! Utils::is_valid_timezone( $timezone ) ) {
-			$timezone = Utils::get_default_timezone();
-		}
+		$timezone = Utils::get_event_timezone();
 
 		$timing = $this->event_timing_data(
 			(int) get_post_meta( $post_id, '_youract_event_start_utc', true ),
@@ -305,11 +301,10 @@ class Renderer {
 	 * @return array<string, string|bool>
 	 */
 	public function event_timing_data( int $start_utc, int $end_utc, string $timezone, bool $all_day ): array {
-		$tz = Utils::is_valid_timezone( $timezone ) ? $timezone : Utils::get_default_timezone();
+		$tz = Utils::get_event_timezone();
 		$date_time_format = (string) apply_filters( 'youract_datetime_format', get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		$date_only_format = (string) apply_filters( 'youract_date_format', get_option( 'date_format' ) );
 		$time_only_format = (string) apply_filters( 'youract_time_format', get_option( 'time_format' ) );
-		$pst_timezone = new DateTimeZone( 'America/Los_Angeles' );
 
 		$result = array(
 			'start_iso'    => '',
@@ -322,7 +317,6 @@ class Renderer {
 			'is_same_day'     => false,
 			'timezone'     => $tz,
 			'timezone_abbr'=> '',
-			'pst_note'     => '',
 			'all_day'      => $all_day,
 		);
 
@@ -338,11 +332,9 @@ class Renderer {
 		$result['start_date_text'] = wp_date( $date_only_format, $start_utc, $local_tz );
 		$result['start_time_text'] = wp_date( $time_only_format, $start_utc, $local_tz );
 		$result['timezone_abbr'] = $start_dt->format( 'T' );
-		$pst_start_text = wp_date( $date_time_format, $start_utc, $pst_timezone );
 
 		if ( $all_day ) {
 			$result['start_text'] = wp_date( $date_only_format, $start_utc, $local_tz );
-			$pst_start_text       = wp_date( $date_only_format, $start_utc, $pst_timezone );
 		}
 
 		if ( $end_utc > 0 ) {
@@ -351,22 +343,11 @@ class Renderer {
 			$result['end_text'] = wp_date( $date_time_format, $end_utc, $local_tz );
 			$result['end_time_text'] = wp_date( $time_only_format, $end_utc, $local_tz );
 			$result['is_same_day'] = $start_dt->format( 'Y-m-d' ) === $end_dt->format( 'Y-m-d' );
-			$pst_end_dt           = ( new DateTimeImmutable( '@' . $end_utc ) )->setTimezone( $pst_timezone );
-			$pst_same_day         = $start_dt->setTimezone( $pst_timezone )->format( 'Y-m-d' ) === $pst_end_dt->format( 'Y-m-d' );
-			$pst_end_text         = wp_date( $date_time_format, $end_utc, $pst_timezone );
 
 			if ( $all_day ) {
 				$result['end_text'] = wp_date( $date_only_format, $end_utc, $local_tz );
 				$result['end_time_text'] = '';
-				$pst_end_text = wp_date( $date_only_format, $end_utc, $pst_timezone );
-				$result['pst_note'] = $pst_start_text === $pst_end_text ? $pst_start_text : $pst_start_text . ' to ' . $pst_end_text;
-			} elseif ( $pst_same_day ) {
-				$result['pst_note'] = wp_date( $date_only_format, $start_utc, $pst_timezone ) . ' ' . wp_date( $time_only_format, $start_utc, $pst_timezone ) . ' to ' . wp_date( $time_only_format, $end_utc, $pst_timezone );
-			} else {
-				$result['pst_note'] = $pst_start_text . ' to ' . $pst_end_text;
 			}
-		} else {
-			$result['pst_note'] = $pst_start_text;
 		}
 
 		return $result;
@@ -401,10 +382,7 @@ class Renderer {
 	 * @return array<string, mixed>
 	 */
 	private function build_event_details_data( int $post_id ): array {
-		$timezone = (string) get_post_meta( $post_id, '_youract_event_timezone', true );
-		if ( ! Utils::is_valid_timezone( $timezone ) ) {
-			$timezone = Utils::get_default_timezone();
-		}
+		$timezone = Utils::get_event_timezone();
 
 		$status = (string) get_post_meta( $post_id, '_youract_event_status', true );
 		$timing = $this->event_timing_data(

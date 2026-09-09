@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -219,3 +219,8 @@ Yes, on singular Event pages when enough data is available for valid JSON-LD.
 - Improved timezone handling to support WordPress timezone selection formats consistently.
 - Updated Event date/time output to display the selected timezone value and include a PST conversion note.
 - Removed Event status and registration deadline date/time fields from the Event admin meta box.
+
+= 1.0.8 =
+
+- Updated Event admin to use Pacific Time (PST) as the fixed entry/display timezone with no timezone selector.
+- Updated frontend Event date/time output to display in PST without parenthetical conversion text.

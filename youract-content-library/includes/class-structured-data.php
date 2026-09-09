@@ -8,7 +8,6 @@
 namespace YourACT\ContentLibrary;
 
 use DateTimeImmutable;
-use DateTimeZone;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -71,16 +70,12 @@ class Structured_Data {
 		$title     = get_the_title( $post_id );
 		$start_utc = (int) get_post_meta( $post_id, '_youract_event_start_utc', true );
 		$end_utc   = (int) get_post_meta( $post_id, '_youract_event_end_utc', true );
-		$timezone  = (string) get_post_meta( $post_id, '_youract_event_timezone', true );
+		$timezone  = Utils::get_event_timezone();
 		$status    = (string) get_post_meta( $post_id, '_youract_event_status', true );
 		$format    = (string) get_post_meta( $post_id, '_youract_event_format', true );
 
 		if ( '' === $title || $start_utc <= 0 ) {
 			return array();
-		}
-
-		if ( ! Utils::is_valid_timezone( $timezone ) ) {
-			$timezone = Utils::get_default_timezone();
 		}
 
 		$tz_obj     = Utils::get_timezone_object( $timezone );

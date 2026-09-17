@@ -64,6 +64,7 @@ class Shortcodes {
 	 */
 	public function register(): void {
 		add_shortcode( 'youract_resources', array( $this, 'render_resources_shortcode' ) );
+		add_shortcode( 'youract_publications', array( $this, 'render_publications_shortcode' ) );
 		add_shortcode( 'youract_events', array( $this, 'render_events_shortcode' ) );
 		add_shortcode( 'youract_featured_resources', array( $this, 'render_featured_resources_shortcode' ) );
 		add_shortcode( 'youract_upcoming_events', array( $this, 'render_upcoming_events_shortcode' ) );
@@ -124,6 +125,62 @@ class Shortcodes {
 		<?php
 		wp_reset_postdata();
 		do_action( 'youract_after_resources_loop', $query_args, $filters, $query );
+
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Renders the Recommended Publications shortcode.
+	 *
+	 * @param array<string, string> $atts Shortcode attributes.
+	 * @return string
+	 */
+	public function render_publications_shortcode( array $atts ): string {
+		$atts = shortcode_atts(
+			array(
+				'per_page' => '50',
+				'orderby'  => 'title',
+				'order'    => 'ASC',
+			),
+			$atts,
+			'youract_publications'
+		);
+
+		$per_page = min( 100, max( 1, absint( $atts['per_page'] ) ) );
+		$orderby  = in_array( sanitize_key( $atts['orderby'] ), array( 'title', 'date' ), true ) ? sanitize_key( $atts['orderby'] ) : 'title';
+		$order    = in_array( strtoupper( sanitize_key( $atts['order'] ) ), array( 'ASC', 'DESC' ), true ) ? strtoupper( sanitize_key( $atts['order'] ) ) : 'ASC';
+		$paged    = $this->request_page( 'youract_publications_page' );
+		$query_args = $this->resource_query->build_publications_query_args( $paged, $per_page, $orderby, $order );
+		$query       = new \WP_Query( $query_args );
+
+		/**
+		 * Fires before the Recommended Publications loop.
+		 *
+		 * @param array<string, mixed> $query_args Query arguments.
+		 * @param \WP_Query             $query      Publications query.
+		 */
+		do_action( 'youract_before_publications_loop', $query_args, $query );
+
+		ob_start();
+		?>
+		<section class="youract-publications" aria-label="<?php esc_attr_e( 'Recommended publications', 'youract-content-library' ); ?>">
+			<?php if ( $query->have_posts() ) : ?>
+				<div class="youract-publication-list">
+					<?php
+					while ( $query->have_posts() ) :
+						$query->the_post();
+						echo $this->renderer->render_publication_entry( get_the_ID() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					endwhile;
+					?>
+				</div>
+				<?php echo $this->render_pagination( $query, 'youract_publications_page' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php else : ?>
+				<p><?php esc_html_e( 'No recommended publications are currently available.', 'youract-content-library' ); ?></p>
+			<?php endif; ?>
+		</section>
+		<?php
+		wp_reset_postdata();
+		do_action( 'youract_after_publications_loop', $query_args, $query );
 
 		return (string) ob_get_clean();
 	}

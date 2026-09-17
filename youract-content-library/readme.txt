@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.16
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,6 +46,18 @@ Out of scope by design:
 4. Add the provided shortcodes to pages as needed.
 
 == Shortcode Documentation ==
+
+= [youract_publications] =
+
+Displays Recommended Reading Resources as a one-column editorial list. Headlines link directly to the freely accessible original source. The loop does not include an internal Resource permalink or Read More link.
+
+Optional attributes:
+
+- per_page (default: 50, constrained to 1-100)
+- orderby: title or date (default: title)
+- order: ASC or DESC (default: ASC)
+
+Example: [youract_publications per_page="12" orderby="title" order="ASC"]
 
 = [youract_resources] =
 
@@ -106,11 +118,15 @@ Server-rendered block for the Site Editor and template editor.
 
 - External URL
 - Source organization
-- Resource summary
-- Access notes
-- Last reviewed (YYYY-MM-DD)
+- Original author
+- Original publication date
+- Why It Matters
+- Accessibility Notes
+- Last reviewed
 - Resource status: active, needs-review, archived
 - Featured resource
+
+Advanced Custom Fields provides the Resource editing interface. Public rendering remains available when ACF is inactive, but Resource fields cannot be edited until ACF is activated. Recommended Reading Resources must remain freely accessible, and editors should verify availability in Last Reviewed. The native WordPress excerpt is the ACT Summary.
 
 = Event Fields =
 
@@ -159,7 +175,7 @@ Final accessibility conformance depends on active theme styles and content quali
 
 = Does this plugin require ACF or CPT UI? =
 
-No. It uses only WordPress core APIs.
+ACF provides the Resource editing interface. The plugin uses a soft runtime dependency and remains activatable without ACF; public features continue to work, but Resource fields cannot be edited until ACF is activated. CPT UI is not required.
 
 = Can editors include archived resources in the library filter? =
 
@@ -174,6 +190,15 @@ UTC Unix timestamps are stored. Admin entry/editing uses local time in the selec
 Yes, on singular Event pages when enough data is available for valid JSON-LD.
 
 == Changelog ==
+
+= 1.1.0 =
+
+* Added plugin-defined ACF Resource fields.
+* Added the Recommended Reading Resource classification.
+* Added the Recommended Publications query, renderer, template, and shortcode.
+* Added direct-to-source Recommended Publication links.
+* Updated Resource administration and public visibility rules.
+* Preserved existing Event functionality.
 
 = 1.0.16 =
 

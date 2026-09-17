@@ -3,6 +3,13 @@
 ## Activation and Deactivation
 
 - Activate plugin with WP_DEBUG enabled and confirm no warnings/notices/fatals.
+- Activate with ACF active and confirm Resource Details appears exactly once.
+- Deactivate ACF and confirm the plugin remains active without a fatal error.
+- With ACF unavailable, confirm an administrator who can activate plugins sees the missing-ACF notice.
+- Reactivate ACF and confirm the missing-ACF notice disappears.
+- Confirm activation creates the Recommended Reading term with slug `recommended-reading`.
+- Repeat activation and confirm no duplicate Recommended Reading term is created.
+- Confirm existing Resource Type terms remain unchanged.
 - Confirm Resources and Events menu items appear.
 - Deactivate plugin and confirm no content is deleted.
 
@@ -14,10 +21,11 @@
 
 ## Resource Authoring
 
-- Create Resource with all fields and confirm save succeeds.
-- Edit Resource and confirm metadata persists.
-- Enter invalid Resource URL and verify admin notice appears and value is preserved for correction.
-- Enter invalid Last Reviewed date and verify notice + no silent coercion.
+- Create a Resource with every ACF field and confirm save/reload persistence.
+- Confirm date fields store `Ymd` and display using the WordPress site date format.
+- Confirm Why It Matters strips unsafe HTML while preserving permitted markup.
+- Confirm registered REST metadata requires appropriate post-specific edit authorization.
+- Confirm the native WordPress excerpt is the ACT Summary and no Resource Summary field exists.
 
 ## Event Authoring and Time Zones
 
@@ -49,6 +57,41 @@
 - Verify archived resources are excluded by default.
 - Verify include archived is available only to authorized users.
 
+## Resource Visibility
+
+- Published + Active Resource appears in the public archive and `[youract_resources]`.
+- Published + Needs Review Resource does not appear in the archive or generic public listing.
+- Published + Archived Resource does not appear in the archive or generic public listing.
+- Draft + Active Resource does not appear publicly.
+- Add another archive meta query constraint and confirm Resource status filtering preserves it.
+
+## Recommended Publications Eligibility
+
+- Published + Active or unset status + Recommended Reading + valid external URL is included.
+- Confirm exclusions for Draft, Needs Review, Archived, another Resource Type, and missing external URL.
+
+## Recommended Publication Output
+
+- Add `[youract_publications]` and confirm the headline links directly to the external source.
+- Confirm no forced new tab, internal Resource permalink, Read More link, or second external link appears.
+- Confirm source and date appear immediately below the headline.
+- Confirm the separator appears only when both source and date exist.
+- Confirm missing source/date produces no broken metadata markup.
+- Confirm ACT Summary uses the native excerpt.
+- Confirm Why It Matters uses canonical metadata and unsafe HTML is removed.
+- Confirm multiple entries have unique heading IDs.
+- Confirm visible keyboard focus on publication headline links.
+- Confirm pagination uses `youract_publications_page` and preserves unrelated query parameters.
+- Confirm shortcode attributes clamp `per_page` to 1-100 and normalize invalid `orderby`/`order` values.
+- Confirm multiple publication shortcodes do not corrupt post context.
+
+## Generic Resource Regression
+
+- Verify `[youract_resources]` still works with keyword and taxonomy filters.
+- Verify `[youract_featured_resources]` still works.
+- Verify generic Resource cards and singular Resource details still work.
+- Verify Resource template overrides still work.
+
 ## Pagination and Empty States
 
 - Verify pagination appears for long lists.
@@ -77,6 +120,15 @@
 - Validate singular Event JSON-LD in Rich Results or Schema validator.
 - Confirm incomplete Event data does not output invalid JSON-LD properties.
 - Confirm status mapping uses correct schema.org EventStatus URLs.
+- Confirm Resource structured data uses canonical metadata, conservative source fields, and valid ISO dates.
+
+## Event Regression
+
+- Event editor still works and Event metadata saves unchanged.
+- Event archive and Event shortcodes still work.
+- Event Details block still renders and avoids duplicate details.
+- Event structured data still validates.
+- Confirm no Event metadata key was renamed.
 
 ## Theme and Portability
 

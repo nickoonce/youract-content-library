@@ -229,9 +229,9 @@ class Resource_Query {
 	}
 
 	/**
-	 * Builds meta query for archived-resource behavior.
+	 * Builds the public Active Resource status clause.
 	 *
-	 * @param array<string, string> $filters Resource filters.
+	 * @param bool $include_archived Whether to omit the public status restriction.
 	 * @return array<int|string, array<string, string>|string>
 	 */
 	public function resource_status_meta_query( bool $include_archived = false ): array {

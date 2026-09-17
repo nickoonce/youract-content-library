@@ -62,7 +62,7 @@ $event_url_use_raw_text = ! empty( $event['event_url_use_raw_text'] );
 		<?php if ( ! empty( $event['event_url'] ) ) : ?>
 			<dt><?php echo esc_html( $event_url_label ); ?></dt>
 			<dd>
-				<a href="<?php echo esc_url( (string) $event['event_url'] ); ?>">
+				<a href="<?php echo esc_url( (string) $event['event_url'] ); ?>" target="_blank" rel="noopener noreferrer">
 					<?php echo esc_html( $event_url_use_raw_text ? (string) $event['event_url'] : __( 'Visit official event page', 'youract-content-library' ) ); ?>
 				</a>
 			</dd>

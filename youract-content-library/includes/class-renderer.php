@@ -64,20 +64,26 @@ class Renderer {
 	 */
 	public function render_resource_card( int $post_id ): string {
 		$heading_id = $this->next_heading_id( 'resource' );
+		$publication_date = (string) get_post_meta( $post_id, 'youract_original_publication_date', true );
+		$last_reviewed     = (string) get_post_meta( $post_id, 'youract_last_reviewed', true );
 
 		$data = array(
-			'post_id'              => $post_id,
-			'heading_id'           => $heading_id,
-			'title'                => get_the_title( $post_id ),
-			'permalink'            => get_permalink( $post_id ),
-			'excerpt'              => has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : '',
-			'resource_summary'     => (string) get_post_meta( $post_id, '_youract_resource_summary', true ),
-			'source_organization'  => (string) get_post_meta( $post_id, '_youract_source_organization', true ),
-			'external_url'         => (string) get_post_meta( $post_id, '_youract_external_url', true ),
-			'last_reviewed'        => (string) get_post_meta( $post_id, '_youract_last_reviewed', true ),
-			'topics'               => $this->term_names( $post_id, 'act_topic' ),
-			'geographies'          => $this->term_names( $post_id, 'act_geography' ),
-			'resource_types'       => $this->term_names( $post_id, 'act_resource_type' ),
+			'post_id'                       => $post_id,
+			'heading_id'                    => $heading_id,
+			'title'                        => get_the_title( $post_id ),
+			'permalink'                    => get_permalink( $post_id ),
+			'excerpt'                      => has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : '',
+			'source_organization'          => (string) get_post_meta( $post_id, 'youract_source_organization', true ),
+			'original_author'              => (string) get_post_meta( $post_id, 'youract_original_author', true ),
+			'original_publication_date'    => Utils::normalize_resource_date( $publication_date ),
+			'original_publication_date_text' => Utils::format_resource_date( $publication_date ),
+			'external_url'                 => (string) get_post_meta( $post_id, 'youract_external_url', true ),
+			'accessibility_notes'          => (string) get_post_meta( $post_id, 'youract_accessibility_notes', true ),
+			'last_reviewed'                => Utils::normalize_resource_date( $last_reviewed ),
+			'last_reviewed_text'           => Utils::format_resource_date( $last_reviewed ),
+			'topics'                       => $this->term_names( $post_id, 'act_topic' ),
+			'geographies'                  => $this->term_names( $post_id, 'act_geography' ),
+			'resource_types'               => $this->term_names( $post_id, 'act_resource_type' ),
 		);
 
 		/**
@@ -360,16 +366,23 @@ class Renderer {
 	 * @return array<string, mixed>
 	 */
 	private function build_resource_details_data( int $post_id ): array {
+		$publication_date = (string) get_post_meta( $post_id, 'youract_original_publication_date', true );
+		$last_reviewed     = (string) get_post_meta( $post_id, 'youract_last_reviewed', true );
+
 		$data = array(
-			'post_id'              => $post_id,
-			'source_organization'  => (string) get_post_meta( $post_id, '_youract_source_organization', true ),
-			'external_url'         => (string) get_post_meta( $post_id, '_youract_external_url', true ),
-			'access_notes'         => (string) get_post_meta( $post_id, '_youract_access_notes', true ),
-			'last_reviewed'        => (string) get_post_meta( $post_id, '_youract_last_reviewed', true ),
-			'resource_status'      => (string) get_post_meta( $post_id, '_youract_resource_status', true ),
-			'topics'               => $this->term_names( $post_id, 'act_topic' ),
-			'geographies'          => $this->term_names( $post_id, 'act_geography' ),
-			'resource_types'       => $this->term_names( $post_id, 'act_resource_type' ),
+			'post_id'                         => $post_id,
+			'source_organization'             => (string) get_post_meta( $post_id, 'youract_source_organization', true ),
+			'original_author'                 => (string) get_post_meta( $post_id, 'youract_original_author', true ),
+			'original_publication_date'       => Utils::normalize_resource_date( $publication_date ),
+			'original_publication_date_text'  => Utils::format_resource_date( $publication_date ),
+			'external_url'                    => (string) get_post_meta( $post_id, 'youract_external_url', true ),
+			'accessibility_notes'             => (string) get_post_meta( $post_id, 'youract_accessibility_notes', true ),
+			'last_reviewed'                   => Utils::normalize_resource_date( $last_reviewed ),
+			'last_reviewed_text'              => Utils::format_resource_date( $last_reviewed ),
+			'resource_status'                 => (string) get_post_meta( $post_id, 'youract_resource_status', true ),
+			'topics'                          => $this->term_names( $post_id, 'act_topic' ),
+			'geographies'                     => $this->term_names( $post_id, 'act_geography' ),
+			'resource_types'                  => $this->term_names( $post_id, 'act_resource_type' ),
 		);
 
 		return apply_filters( 'youract_resource_details_data', $data, $post_id );

@@ -115,19 +115,19 @@ class Resource_Query {
 			'meta_query'          => array(
 				'relation' => 'AND',
 				array(
-					'key'     => '_youract_featured_resource',
+					'key'     => 'youract_featured_resource',
 					'value'   => '1',
 					'compare' => '=',
 				),
 				array(
 					'relation' => 'OR',
 					array(
-						'key'     => '_youract_resource_status',
+						'key'     => 'youract_resource_status',
 						'value'   => 'active',
 						'compare' => '=',
 					),
 					array(
-						'key'     => '_youract_resource_status',
+						'key'     => 'youract_resource_status',
 						'compare' => 'NOT EXISTS',
 					),
 				),
@@ -160,13 +160,13 @@ class Resource_Query {
 		return array(
 			'relation' => 'OR',
 			array(
-				'key'     => '_youract_resource_status',
-				'compare' => 'NOT EXISTS',
+				'key'     => 'youract_resource_status',
+				'value'   => 'active',
+				'compare' => '=',
 			),
 			array(
-				'key'     => '_youract_resource_status',
-				'value'   => 'archived',
-				'compare' => '!=',
+				'key'     => 'youract_resource_status',
+				'compare' => 'NOT EXISTS',
 			),
 		);
 	}

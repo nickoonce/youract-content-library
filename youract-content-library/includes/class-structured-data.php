@@ -25,6 +25,35 @@ class Structured_Data {
 	 */
 	public function register(): void {
 		add_action( 'wp_head', array( $this, 'output_event_json_ld' ) );
+		add_action( 'wp_head', array( $this, 'output_resource_json_ld' ) );
+	}
+
+	/**
+	 * Outputs JSON-LD for a singular Resource.
+	 *
+	 * @return void
+	 */
+	public function output_resource_json_ld(): void {
+		if ( ! is_singular( 'act_resource' ) ) {
+			return;
+		}
+
+		$post_id = get_queried_object_id();
+		if ( ! $post_id ) {
+			return;
+		}
+
+		$data = $this->build_resource_json_ld( $post_id );
+		if ( empty( $data ) ) {
+			return;
+		}
+
+		$data = apply_filters( 'youract_resource_json_ld_data', $data, $post_id );
+		if ( empty( $data ) || ! is_array( $data ) ) {
+			return;
+		}
+
+		echo '<script type="application/ld+json">' . wp_json_encode( $data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
 	}
 
 	/**
@@ -119,6 +148,91 @@ class Structured_Data {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Builds Resource JSON-LD array.
+	 *
+	 * @param int $post_id Resource post ID.
+	 * @return array<string, mixed>
+	 */
+	private function build_resource_json_ld( int $post_id ): array {
+		$title       = get_the_title( $post_id );
+		$permalink   = get_permalink( $post_id );
+		$external_url = (string) get_post_meta( $post_id, 'youract_external_url', true );
+		$source       = (string) get_post_meta( $post_id, 'youract_source_organization', true );
+		$author       = (string) get_post_meta( $post_id, 'youract_original_author', true );
+		$published    = Utils::normalize_resource_date( (string) get_post_meta( $post_id, 'youract_original_publication_date', true ) );
+		$reviewed     = Utils::normalize_resource_date( (string) get_post_meta( $post_id, 'youract_last_reviewed', true ) );
+
+		if ( '' === $title ) {
+			return array();
+		}
+
+		$data = array(
+			'@context' => 'https://schema.org',
+			'@type'    => 'CreativeWork',
+			'name'     => wp_strip_all_tags( $title ),
+			'url'      => '' !== $external_url ? $external_url : $permalink,
+		);
+
+		$description = wp_strip_all_tags( has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : '' );
+		if ( '' !== trim( $description ) ) {
+			$data['description'] = $description;
+		}
+
+		if ( '' !== $permalink && '' !== $external_url ) {
+			$data['mainEntityOfPage'] = $permalink;
+		}
+
+		if ( '' !== $source ) {
+			$data['publisher'] = array(
+				'@type' => 'Organization',
+				'name'  => $source,
+			);
+		}
+
+		if ( '' !== $author ) {
+			$data['author'] = array(
+				'@type' => 'Person',
+				'name'  => $author,
+			);
+		}
+
+		if ( '' !== $published ) {
+			$data['datePublished'] = $published;
+		}
+
+		if ( '' !== $reviewed ) {
+			$data['dateModified'] = $reviewed;
+		}
+
+		$keywords = array_merge(
+			$this->resource_term_names( $post_id, 'act_topic' ),
+			$this->resource_term_names( $post_id, 'act_geography' ),
+			$this->resource_term_names( $post_id, 'act_resource_type' )
+		);
+		if ( ! empty( $keywords ) ) {
+			$data['keywords'] = implode( ', ', $keywords );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Returns term names for Resource structured data.
+	 *
+	 * @param int    $post_id  Resource post ID.
+	 * @param string $taxonomy Taxonomy name.
+	 * @return string[]
+	 */
+	private function resource_term_names( int $post_id, string $taxonomy ): array {
+		$terms = get_the_terms( $post_id, $taxonomy );
+		if ( empty( $terms ) || is_wp_error( $terms ) ) {
+			return array();
+		}
+
+		return wp_list_pluck( $terms, 'name' );
 	}
 
 	/**

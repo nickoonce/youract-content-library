@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$summary = (string) ( $resource['excerpt'] ?: $resource['resource_summary'] );
+$summary = (string) ( $resource['excerpt'] ?? '' );
 ?>
 <article class="youract-card youract-resource-card" aria-labelledby="<?php echo esc_attr( (string) $resource['heading_id'] ); ?>">
 	<h3 class="youract-card-title" id="<?php echo esc_attr( (string) $resource['heading_id'] ); ?>">
@@ -23,8 +23,13 @@ $summary = (string) ( $resource['excerpt'] ?: $resource['resource_summary'] );
 
 	<dl class="youract-meta-list">
 		<?php if ( ! empty( $resource['source_organization'] ) ) : ?>
-			<dt><?php esc_html_e( 'Source organization', 'youract-content-library' ); ?></dt>
+			<dt><?php esc_html_e( 'Source', 'youract-content-library' ); ?></dt>
 			<dd><?php echo esc_html( (string) $resource['source_organization'] ); ?></dd>
+		<?php endif; ?>
+
+		<?php if ( ! empty( $resource['original_publication_date'] ) && ! empty( $resource['original_publication_date_text'] ) ) : ?>
+			<dt><?php esc_html_e( 'Original publication date', 'youract-content-library' ); ?></dt>
+			<dd><time datetime="<?php echo esc_attr( (string) $resource['original_publication_date'] ); ?>"><?php echo esc_html( (string) $resource['original_publication_date_text'] ); ?></time></dd>
 		<?php endif; ?>
 
 		<?php if ( ! empty( $resource['resource_types'] ) && is_array( $resource['resource_types'] ) ) : ?>
@@ -42,9 +47,9 @@ $summary = (string) ( $resource['excerpt'] ?: $resource['resource_summary'] );
 			<dd><?php echo esc_html( implode( ', ', $resource['geographies'] ) ); ?></dd>
 		<?php endif; ?>
 
-		<?php if ( ! empty( $resource['last_reviewed'] ) ) : ?>
+		<?php if ( ! empty( $resource['last_reviewed'] ) && ! empty( $resource['last_reviewed_text'] ) ) : ?>
 			<dt><?php esc_html_e( 'Last reviewed', 'youract-content-library' ); ?></dt>
-			<dd><time datetime="<?php echo esc_attr( (string) $resource['last_reviewed'] ); ?>"><?php echo esc_html( (string) $resource['last_reviewed'] ); ?></time></dd>
+			<dd><time datetime="<?php echo esc_attr( (string) $resource['last_reviewed'] ); ?>"><?php echo esc_html( (string) $resource['last_reviewed_text'] ); ?></time></dd>
 		<?php endif; ?>
 	</dl>
 

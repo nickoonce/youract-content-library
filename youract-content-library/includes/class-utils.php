@@ -284,4 +284,49 @@ class Utils {
 
 		return $parsed->format( 'Y-m-d' ) === $date;
 	}
+
+	/**
+	 * Normalizes a Resource date to ISO format.
+	 *
+	 * @param string $date Stored Resource date in Ymd or Y-m-d format.
+	 * @return string
+	 */
+	public static function normalize_resource_date( string $date ): string {
+		$date = trim( $date );
+		if ( '' === $date ) {
+			return '';
+		}
+
+		if ( preg_match( '/^\d{8}$/', $date ) ) {
+			$parsed = DateTimeImmutable::createFromFormat( '!Ymd', $date );
+			$errors = DateTimeImmutable::getLastErrors();
+			if ( false !== $parsed && ( ! is_array( $errors ) || ( 0 === $errors['warning_count'] && 0 === $errors['error_count'] ) ) && $parsed->format( 'Ymd' ) === $date ) {
+				return $parsed->format( 'Y-m-d' );
+			}
+
+			return '';
+		}
+
+		return self::is_valid_date( $date ) ? $date : '';
+	}
+
+	/**
+	 * Formats a Resource date using the WordPress site date format.
+	 *
+	 * @param string $date Stored Resource date in Ymd or Y-m-d format.
+	 * @return string
+	 */
+	public static function format_resource_date( string $date ): string {
+		$normalized = self::normalize_resource_date( $date );
+		if ( '' === $normalized ) {
+			return '';
+		}
+
+		$timestamp = DateTimeImmutable::createFromFormat( '!Y-m-d', $normalized, self::get_timezone_object( self::get_default_timezone() ) );
+		if ( false === $timestamp ) {
+			return '';
+		}
+
+		return wp_date( (string) get_option( 'date_format' ), $timestamp->getTimestamp(), self::get_timezone_object( self::get_default_timezone() ) );
+	}
 }

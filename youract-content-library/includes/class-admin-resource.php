@@ -37,8 +37,9 @@ class Admin_Resource {
 	 */
 	public function set_columns( array $columns ): array {
 		$columns['act_resource_type']   = __( 'Resource Type', 'youract-content-library' );
-		$columns['source_organization'] = __( 'Source Organization', 'youract-content-library' );
+		$columns['source_organization'] = __( 'Source', 'youract-content-library' );
 		$columns['resource_status']     = __( 'Status', 'youract-content-library' );
+		$columns['original_publication_date'] = __( 'Original Publication Date', 'youract-content-library' );
 		$columns['last_reviewed']       = __( 'Last Reviewed', 'youract-content-library' );
 		$columns['featured_resource']   = __( 'Featured', 'youract-content-library' );
 
@@ -73,7 +74,7 @@ class Admin_Resource {
 		if ( 'resource_status' === $column ) {
 			$labels = array(
 				'active'       => __( 'Active', 'youract-content-library' ),
-				'needs-review' => __( 'Needs review', 'youract-content-library' ),
+				'needs-review' => __( 'Needs Review', 'youract-content-library' ),
 				'archived'     => __( 'Archived', 'youract-content-library' ),
 			);
 			$value = (string) get_post_meta( $post_id, 'youract_resource_status', true );
@@ -83,7 +84,15 @@ class Admin_Resource {
 
 		if ( 'last_reviewed' === $column ) {
 			$value = (string) get_post_meta( $post_id, 'youract_last_reviewed', true );
-			echo '' !== $value ? esc_html( $value ) : '&#8212;';
+			$display = Utils::format_resource_date( $value );
+			echo '' !== $display ? esc_html( $display ) : '&#8212;';
+			return;
+		}
+
+		if ( 'original_publication_date' === $column ) {
+			$value   = (string) get_post_meta( $post_id, 'youract_original_publication_date', true );
+			$display = Utils::format_resource_date( $value );
+			echo '' !== $display ? esc_html( $display ) : '&#8212;';
 			return;
 		}
 
@@ -102,6 +111,7 @@ class Admin_Resource {
 	public function set_sortable_columns( array $columns ): array {
 		$columns['source_organization'] = 'source_organization';
 		$columns['resource_status']     = 'resource_status';
+		$columns['original_publication_date'] = 'original_publication_date';
 		$columns['last_reviewed']       = 'last_reviewed';
 		$columns['featured_resource']   = 'featured_resource';
 

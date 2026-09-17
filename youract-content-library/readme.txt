@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.0.13
+Stable tag: 1.0.14
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -174,6 +174,10 @@ UTC Unix timestamps are stored. Admin entry/editing uses local time in the selec
 Yes, on singular Event pages when enough data is available for valid JSON-LD.
 
 == Changelog ==
+
+= 1.0.14 =
+
+- Changed Advanced Custom Fields integration to a soft runtime dependency compatible with ACF Free and Pro.
 
 = 1.0.13 =
 

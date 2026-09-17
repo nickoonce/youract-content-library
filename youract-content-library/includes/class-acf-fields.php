@@ -149,10 +149,10 @@ class ACF_Fields {
 	 * @return void
 	 */
 	public function render_missing_acf_notice(): void {
-		if ( function_exists( 'acf_add_local_field_group' ) ) {
+		if ( ! current_user_can( 'activate_plugins' ) || function_exists( 'acf_add_local_field_group' ) ) {
 			return;
 		}
 
-		echo '<div class="notice notice-error"><p>' . esc_html__( 'Advanced Custom Fields is required for the Resource editing interface in Your ACT Content Library.', 'youract-content-library' ) . '</p></div>';
+		echo '<div class="notice notice-error"><p>' . esc_html__( 'Your ACT Content Library requires Advanced Custom Fields for the Resource editing interface. Public content features remain available, but Resource fields cannot be edited until ACF is activated.', 'youract-content-library' ) . '</p></div>';
 	}
 }

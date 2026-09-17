@@ -106,6 +106,63 @@ class Renderer {
 	}
 
 	/**
+	 * Renders one Recommended Publication entry.
+	 *
+	 * @param int $post_id Resource post ID.
+	 * @return string
+	 */
+	public function render_publication_entry( int $post_id ): string {
+		$source_url = esc_url( (string) get_post_meta( $post_id, 'youract_external_url', true ) );
+		if ( '' === $source_url ) {
+			return '';
+		}
+
+		$publication_date = (string) get_post_meta( $post_id, 'youract_original_publication_date', true );
+		$data             = array(
+			'post_id'                         => $post_id,
+			'heading_id'                      => $this->next_heading_id( 'publication' ),
+			'title'                           => get_the_title( $post_id ),
+			'source_url'                      => $source_url,
+			'source_organization'             => (string) get_post_meta( $post_id, 'youract_source_organization', true ),
+			'original_author'                 => (string) get_post_meta( $post_id, 'youract_original_author', true ),
+			'original_publication_date'       => $publication_date,
+			'original_publication_date_iso'   => Utils::normalize_resource_date( $publication_date ),
+			'original_publication_date_display' => Utils::format_resource_date( $publication_date ),
+			'summary'                         => has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : '',
+			'why_it_matters'                  => (string) get_post_meta( $post_id, 'youract_why_it_matters', true ),
+			'topics'                          => $this->term_names( $post_id, 'act_topic' ),
+			'featured'                        => (bool) get_post_meta( $post_id, 'youract_featured_resource', true ),
+		);
+
+		/**
+		 * Filters Recommended Publication entry data before rendering.
+		 *
+		 * @param array<string, mixed> $data    Publication data.
+		 * @param int                  $post_id Resource ID.
+		 */
+		$data = apply_filters( 'youract_publication_entry_data', $data, $post_id );
+		if ( ! is_array( $data ) ) {
+			return '';
+		}
+
+		$source_url = isset( $data['source_url'] ) ? esc_url( (string) $data['source_url'] ) : '';
+		if ( '' === $source_url ) {
+			return '';
+		}
+
+		$data['source_url'] = $source_url;
+		$html              = $this->render_template( 'publication-entry.php', array( 'publication' => $data ) );
+
+		/**
+		 * Filters rendered Recommended Publication entry HTML.
+		 *
+		 * @param string               $html Rendered publication HTML.
+		 * @param array<string, mixed> $data Publication data.
+		 */
+		return (string) apply_filters( 'youract_publication_entry_html', $html, $data );
+	}
+
+	/**
 	 * Renders one Event card.
 	 *
 	 * @param int $post_id Event post ID.

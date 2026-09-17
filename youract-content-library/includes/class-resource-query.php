@@ -17,6 +17,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Resource_Query {
 
 	/**
+	 * Registers query hooks.
+	 *
+	 * @return void
+	 */
+	public function register(): void {
+		add_action( 'pre_get_posts', array( $this, 'handle_resource_archive_query' ) );
+	}
+
+	/**
+	 * Applies Resource visibility to the public Resource archive.
+	 *
+	 * @param \WP_Query $query Main public query.
+	 * @return void
+	 */
+	public function handle_resource_archive_query( \WP_Query $query ): void {
+		if ( is_admin() || ! $query->is_main_query() || ! $query->is_post_type_archive( 'act_resource' ) ) {
+			return;
+		}
+
+		$existing_meta_query = $query->get( 'meta_query' );
+		$status_meta_query   = $this->resource_status_meta_query();
+
+		if ( empty( $existing_meta_query ) ) {
+			$query->set( 'meta_query', $status_meta_query );
+			return;
+		}
+
+		$query->set(
+			'meta_query',
+			array(
+				'relation' => 'AND',
+				$existing_meta_query,
+				$status_meta_query,
+			)
+		);
+	}
+
+	/**
 	 * Returns normalized filter values from request.
 	 *
 	 * @return array<string, string>
@@ -88,7 +126,7 @@ class Resource_Query {
 			$args['tax_query'] = $tax_query;
 		}
 
-		$args['meta_query'] = $this->resource_status_meta_query( $filters );
+		$args['meta_query'] = $this->resource_status_meta_query( '1' === ( $filters['include_archived'] ?? '' ) && current_user_can( 'edit_posts' ) );
 
 		/**
 		 * Filters Resource library query arguments.
@@ -150,9 +188,7 @@ class Resource_Query {
 	 * @param array<string, string> $filters Resource filters.
 	 * @return array<int|string, array<string, string>|string>
 	 */
-	private function resource_status_meta_query( array $filters ): array {
-		$include_archived = '1' === ( $filters['include_archived'] ?? '' ) && current_user_can( 'edit_posts' );
-
+	public function resource_status_meta_query( bool $include_archived = false ): array {
 		if ( $include_archived ) {
 			return array();
 		}

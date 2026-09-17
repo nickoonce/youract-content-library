@@ -72,7 +72,7 @@ class Resource_Query {
 	/**
 	 * Builds args for [youract_resources].
 	 *
-	 * @param array<string, string> $filters Resource filters.
+	 * @param bool $include_archived Whether to omit the public status restriction.
 	 * @param int                   $paged   Current page.
 	 * @param int                   $per_page Posts per page.
 	 * @return array<string, mixed>
@@ -157,18 +157,7 @@ class Resource_Query {
 					'value'   => '1',
 					'compare' => '=',
 				),
-				array(
-					'relation' => 'OR',
-					array(
-						'key'     => 'youract_resource_status',
-						'value'   => 'active',
-						'compare' => '=',
-					),
-					array(
-						'key'     => 'youract_resource_status',
-						'compare' => 'NOT EXISTS',
-					),
-				),
+				$this->resource_status_meta_query(),
 			),
 			'orderby'             => 'date',
 			'order'               => 'DESC',
@@ -180,6 +169,63 @@ class Resource_Query {
 		 * @param array<string, mixed> $args Query args.
 		 */
 		return apply_filters( 'youract_featured_resource_query_args', $args );
+	}
+
+	/**
+	 * Builds args for Recommended Publications.
+	 *
+	 * @param int    $paged   Current page.
+	 * @param int    $per_page Posts per page.
+	 * @param string $orderby  Permitted ordering field.
+	 * @param string $order    Permitted ordering direction.
+	 * @return array<string, mixed>
+	 */
+	public function build_publications_query_args(
+		int $paged = 1,
+		int $per_page = 50,
+		string $orderby = 'title',
+		string $order = 'ASC'
+	): array {
+		$orderby = in_array( $orderby, array( 'title', 'date' ), true ) ? $orderby : 'title';
+		$order   = in_array( strtoupper( $order ), array( 'ASC', 'DESC' ), true ) ? strtoupper( $order ) : 'ASC';
+
+		$args = array(
+			'post_type'           => 'act_resource',
+			'post_status'         => 'publish',
+			'posts_per_page'      => min( 100, max( 1, $per_page ) ),
+			'paged'               => max( 1, $paged ),
+			'ignore_sticky_posts' => true,
+			'no_found_rows'       => false,
+			'tax_query'           => array(
+				array(
+					'taxonomy' => 'act_resource_type',
+					'field'    => 'slug',
+					'terms'    => 'recommended-reading',
+				),
+			),
+			'meta_query'          => array(
+				'relation' => 'AND',
+				$this->resource_status_meta_query(),
+				array(
+					'key'     => 'youract_external_url',
+					'value'   => '',
+					'compare' => '!=',
+				),
+			),
+			'orderby'             => $orderby,
+			'order'               => $order,
+		);
+
+		/**
+		 * Filters Recommended Publications query arguments.
+		 *
+		 * @param array<string, mixed> $args    Query args.
+		 * @param int                  $paged   Current page.
+		 * @param int                  $per_page Posts per page after clamping.
+		 * @param string               $orderby Ordering field.
+		 * @param string               $order   Ordering direction.
+		 */
+		return apply_filters( 'youract_publications_query_args', $args, max( 1, $paged ), min( 100, max( 1, $per_page ) ), $orderby, $order );
 	}
 
 	/**

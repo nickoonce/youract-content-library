@@ -36,6 +36,7 @@ class Activator {
 		$taxonomies->register_taxonomies();
 
 		self::maybe_seed_default_terms();
+		self::ensure_recommended_reading_term();
 		flush_rewrite_rules();
 	}
 
@@ -76,6 +77,27 @@ class Activator {
 		self::insert_terms_if_missing( 'act_event_type', $event_types );
 
 		update_option( self::TERMS_SEEDED_OPTION, 1, false );
+	}
+
+	/**
+	 * Ensures the Recommended Reading Resource Type exists.
+	 *
+	 * @return void
+	 */
+	private static function ensure_recommended_reading_term(): void {
+		if ( term_exists( 'Recommended Reading', 'act_resource_type' ) ) {
+			return;
+		}
+
+		$result = wp_insert_term(
+			'Recommended Reading',
+			'act_resource_type',
+			array( 'slug' => 'recommended-reading' )
+		);
+
+		if ( is_wp_error( $result ) ) {
+			return;
+		}
 	}
 
 	/**

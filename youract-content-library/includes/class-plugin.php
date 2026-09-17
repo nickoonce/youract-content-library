@@ -45,6 +45,13 @@ final class Plugin {
 	private Meta_Registration $meta_registration;
 
 	/**
+	 * ACF field group manager.
+	 *
+	 * @var ACF_Fields
+	 */
+	private ACF_Fields $acf_fields;
+
+	/**
 	 * Resource admin manager.
 	 *
 	 * @var Admin_Resource
@@ -114,6 +121,7 @@ final class Plugin {
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-taxonomies.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-utils.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-meta-registration.php';
+		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-acf-fields.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-admin-resource.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-admin-event.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-resource-query.php';
@@ -129,6 +137,7 @@ final class Plugin {
 		$this->post_types = new Post_Types();
 		$this->taxonomies = new Taxonomies();
 		$this->meta_registration = new Meta_Registration();
+		$this->acf_fields        = new ACF_Fields();
 		$this->admin_resource    = new Admin_Resource();
 		$this->admin_event       = new Admin_Event();
 		$this->renderer          = new Renderer();
@@ -146,6 +155,7 @@ final class Plugin {
 		$this->post_types->register();
 		$this->taxonomies->register();
 		$this->meta_registration->register();
+		$this->acf_fields->register();
 		$this->renderer->register();
 		$this->event_query->register();
 		$this->shortcodes->register();

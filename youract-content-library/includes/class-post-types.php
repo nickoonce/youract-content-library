@@ -59,7 +59,7 @@ class Post_Types {
 				'rewrite'         => array( 'slug' => 'resources' ),
 				'show_in_rest'    => true,
 				'menu_icon'       => 'dashicons-media-document',
-				'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'author' ),
+				'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'author', 'custom-fields' ),
 				'publicly_queryable' => true,
 				'show_in_nav_menus'  => true,
 				'show_ui'            => true,

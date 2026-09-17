@@ -62,16 +62,18 @@ class Meta_Registration {
 	 * @return void
 	 */
 	private function register_resource_meta(): void {
-		$this->register_string_meta( 'act_resource', '_youract_external_url', 'uri', array( $this, 'sanitize_url' ) );
-		$this->register_string_meta( 'act_resource', '_youract_source_organization', 'string', 'sanitize_text_field' );
-		$this->register_string_meta( 'act_resource', '_youract_resource_summary', 'string', 'sanitize_textarea_field' );
-		$this->register_string_meta( 'act_resource', '_youract_access_notes', 'string', 'sanitize_textarea_field' );
-		$this->register_string_meta( 'act_resource', '_youract_last_reviewed', 'string', array( $this, 'sanitize_date' ) );
-		$this->register_string_meta( 'act_resource', '_youract_resource_status', 'string', array( $this, 'sanitize_resource_status' ) );
+		$this->register_string_meta( 'act_resource', 'youract_external_url', 'uri', array( $this, 'sanitize_url' ) );
+		$this->register_string_meta( 'act_resource', 'youract_source_organization', 'string', 'sanitize_text_field' );
+		$this->register_string_meta( 'act_resource', 'youract_original_author', 'string', 'sanitize_text_field' );
+		$this->register_string_meta( 'act_resource', 'youract_original_publication_date', 'string', array( $this, 'sanitize_date' ) );
+		$this->register_string_meta( 'act_resource', 'youract_why_it_matters', 'string', 'wp_kses_post' );
+		$this->register_string_meta( 'act_resource', 'youract_accessibility_notes', 'string', 'sanitize_textarea_field' );
+		$this->register_string_meta( 'act_resource', 'youract_last_reviewed', 'string', array( $this, 'sanitize_date' ) );
+		$this->register_string_meta( 'act_resource', 'youract_resource_status', 'string', array( $this, 'sanitize_resource_status' ) );
 
 		register_post_meta(
 			'act_resource',
-			'_youract_featured_resource',
+			'youract_featured_resource',
 			array(
 				'single'            => true,
 				'type'              => 'boolean',
@@ -166,10 +168,6 @@ class Meta_Registration {
 	 * @return bool
 	 */
 	public function can_edit_post_meta( $allowed, string $meta_key, int $post_id, int $user_id ): bool {
-		if ( ! $allowed ) {
-			return false;
-		}
-
 		if ( $post_id <= 0 ) {
 			return false;
 		}
@@ -218,8 +216,16 @@ class Meta_Registration {
 			return '';
 		}
 
+		if ( preg_match( '/^\d{8}$/', $value ) ) {
+			$parsed = \DateTimeImmutable::createFromFormat( '!Ymd', $value );
+			$errors = \DateTimeImmutable::getLastErrors();
+			if ( false !== $parsed && ( ! is_array( $errors ) || ( 0 === $errors['warning_count'] && 0 === $errors['error_count'] ) ) && $parsed->format( 'Ymd' ) === $value ) {
+				return $value;
+			}
+		}
+
 		if ( $this->is_valid_date( $value ) ) {
-			return $value;
+			return str_replace( '-', '', $value );
 		}
 
 		return '';

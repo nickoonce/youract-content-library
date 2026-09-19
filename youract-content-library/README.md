@@ -1,6 +1,6 @@
 # Your ACT Content Library
 
-Production-oriented WordPress plugin for structured Events and Resources on YourACT.net. Recommended Publications are Resources classified with the Recommended Reading Resource Type, not a separate post type.
+Production-oriented WordPress plugin for structured Events, Resources, and Opportunities on YourACT.net. Recommended Publications are Resources classified with the Recommended Reading Resource Type, not a separate post type.
 
 ## Dependencies
 
@@ -41,6 +41,25 @@ Resource taxonomies:
 - `youract_featured_resource`
 
 ACF dates are stored as `Ymd`. Displayed dates use the WordPress site date format. Resource Status values are `active`, `needs-review`, and `archived`.
+
+## Opportunity Model
+
+- Post type: `act_opportunity`
+- Archive: `/opportunities/`
+- Native post states control visibility: use Draft and Published.
+- Stage values: `exploring`, `seeking-partners`, `in-progress`, `success-story`, and `inactive`.
+- Inactive Opportunities are excluded from public archive collections.
+- Featured Opportunities are ordered before non-featured Opportunities, then by publish date descending.
+
+Opportunity metadata:
+
+- `act_opportunity_stage`
+- `act_opportunity_featured`
+- `act_opportunity_subtitle`
+- `act_opportunity_cta_label`
+- `act_opportunity_cta_url`
+
+An Opportunity stays in the same post through its lifecycle. Moving it to Success story does not change its permalink, content, or revisions. A CTA is rendered only when both a label and a valid URL are present.
 
 ## Architecture Summary
 
@@ -101,6 +120,7 @@ Place override templates in your theme:
 - youract-content-library/resource-details.php
 - youract-content-library/event-details.php
 - youract-content-library/publication-entry.php
+- youract-content-library/opportunity-details.php
 
 ## Security Notes
 

@@ -38,6 +38,13 @@ class Meta_Registration {
 	private const EVENT_STATUSES = array( 'scheduled', 'postponed', 'cancelled', 'completed' );
 
 	/**
+	 * Opportunity stage values.
+	 *
+	 * @var string[]
+	 */
+	private const OPPORTUNITY_STAGES = array( 'exploring', 'seeking-partners', 'in-progress', 'success-story', 'inactive' );
+
+	/**
 	 * Hooks registration.
 	 *
 	 * @return void
@@ -54,6 +61,7 @@ class Meta_Registration {
 	public function register_meta(): void {
 		$this->register_resource_meta();
 		$this->register_event_meta();
+		$this->register_opportunity_meta();
 	}
 
 	/**
@@ -132,6 +140,31 @@ class Meta_Registration {
 	}
 
 	/**
+	 * Registers Opportunity metadata.
+	 *
+	 * @return void
+	 */
+	private function register_opportunity_meta(): void {
+		$this->register_string_meta( 'act_opportunity', 'act_opportunity_stage', 'string', array( $this, 'sanitize_opportunity_stage' ), 'exploring' );
+		$this->register_string_meta( 'act_opportunity', 'act_opportunity_subtitle', 'string', 'sanitize_text_field' );
+		$this->register_string_meta( 'act_opportunity', 'act_opportunity_cta_label', 'string', 'sanitize_text_field' );
+		$this->register_string_meta( 'act_opportunity', 'act_opportunity_cta_url', 'uri', array( $this, 'sanitize_url' ) );
+
+		register_post_meta(
+			'act_opportunity',
+			'act_opportunity_featured',
+			array(
+				'single'            => true,
+				'type'              => 'boolean',
+				'default'           => false,
+				'show_in_rest'      => true,
+				'sanitize_callback' => array( $this, 'sanitize_boolean' ),
+				'auth_callback'     => array( $this, 'can_edit_post_meta' ),
+			)
+		);
+	}
+
+	/**
 	 * Registers a string-like post meta key.
 	 *
 	 * @param string   $post_type         Post type.
@@ -140,13 +173,14 @@ class Meta_Registration {
 	 * @param callable $sanitize_callback Sanitizer.
 	 * @return void
 	 */
-	private function register_string_meta( string $post_type, string $meta_key, string $schema_type, callable $sanitize_callback ): void {
+	private function register_string_meta( string $post_type, string $meta_key, string $schema_type, callable $sanitize_callback, string $default = '' ): void {
 		register_post_meta(
 			$post_type,
 			$meta_key,
 			array(
 				'single'            => true,
 				'type'              => 'string',
+				'default'           => $default,
 				'show_in_rest'      => array(
 					'schema' => array(
 						'type' => $schema_type,
@@ -334,6 +368,18 @@ class Meta_Registration {
 		}
 
 		return 'active';
+	}
+
+	/**
+	 * Sanitizes Opportunity stage values.
+	 *
+	 * @param mixed $value Raw value.
+	 * @return string
+	 */
+	public function sanitize_opportunity_stage( $value ): string {
+		$value = is_string( $value ) ? sanitize_key( $value ) : '';
+
+		return in_array( $value, self::OPPORTUNITY_STAGES, true ) ? $value : 'exploring';
 	}
 
 	/**

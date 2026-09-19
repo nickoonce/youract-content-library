@@ -253,6 +253,13 @@ class Renderer {
 			return $content . $html;
 		}
 
+		if ( is_singular( 'act_opportunity' ) ) {
+			$details = $this->build_opportunity_details_data( get_the_ID() );
+			$html    = $this->render_template( 'opportunity-details.php', array( 'opportunity' => $details ) );
+
+			return $content . (string) apply_filters( 'youract_opportunity_details_html', $html, $details );
+		}
+
 		if ( is_singular( 'act_event' ) ) {
 			if ( has_block( 'youract/event-details', $content ) || $this->template_has_event_details_block() ) {
 				return $content;
@@ -443,6 +450,26 @@ class Renderer {
 		);
 
 		return apply_filters( 'youract_resource_details_data', $data, $post_id );
+	}
+
+	/**
+	 * Builds singular Opportunity details array.
+	 *
+	 * @param int $post_id Opportunity ID.
+	 * @return array<string, mixed>
+	 */
+	private function build_opportunity_details_data( int $post_id ): array {
+		$cta_url = esc_url( (string) get_post_meta( $post_id, 'act_opportunity_cta_url', true ) );
+
+		return array(
+			'post_id'    => $post_id,
+			'heading_id' => $this->next_heading_id( 'opportunity-details' ),
+			'subtitle'   => (string) get_post_meta( $post_id, 'act_opportunity_subtitle', true ),
+			'stage'      => (string) get_post_meta( $post_id, 'act_opportunity_stage', true ),
+			'featured'   => (bool) get_post_meta( $post_id, 'act_opportunity_featured', true ),
+			'cta_label'  => (string) get_post_meta( $post_id, 'act_opportunity_cta_label', true ),
+			'cta_url'    => $cta_url,
+		);
 	}
 
 	/**

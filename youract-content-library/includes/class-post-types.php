@@ -104,5 +104,42 @@ class Post_Types {
 				'query_var'          => true,
 			),
 		);
+
+		register_post_type(
+			'act_opportunity',
+			array(
+				'labels'             => array(
+					'name'                  => __( 'Opportunities', 'youract-content-library' ),
+					'singular_name'         => __( 'Opportunity', 'youract-content-library' ),
+					'menu_name'             => __( 'Opportunities', 'youract-content-library' ),
+					'name_admin_bar'        => __( 'Opportunity', 'youract-content-library' ),
+					'add_new'               => __( 'Add New', 'youract-content-library' ),
+					'add_new_item'          => __( 'Add New Opportunity', 'youract-content-library' ),
+					'edit_item'             => __( 'Edit Opportunity', 'youract-content-library' ),
+					'new_item'              => __( 'New Opportunity', 'youract-content-library' ),
+					'view_item'             => __( 'View Opportunity', 'youract-content-library' ),
+					'view_items'            => __( 'View Opportunities', 'youract-content-library' ),
+					'search_items'          => __( 'Search Opportunities', 'youract-content-library' ),
+					'not_found'             => __( 'No opportunities found.', 'youract-content-library' ),
+					'not_found_in_trash'    => __( 'No opportunities found in Trash.', 'youract-content-library' ),
+					'all_items'             => __( 'All Opportunities', 'youract-content-library' ),
+					'archives'              => __( 'Opportunity Archives', 'youract-content-library' ),
+					'attributes'            => __( 'Opportunity Attributes', 'youract-content-library' ),
+					'insert_into_item'      => __( 'Insert into opportunity', 'youract-content-library' ),
+					'uploaded_to_this_item' => __( 'Uploaded to this opportunity', 'youract-content-library' ),
+				),
+				'public'             => true,
+				'has_archive'        => true,
+				'rewrite'            => array( 'slug' => 'opportunities' ),
+				'show_in_rest'       => true,
+				'menu_icon'          => 'dashicons-lightbulb',
+				'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'author', 'custom-fields' ),
+				'publicly_queryable' => true,
+				'show_in_nav_menus'  => true,
+				'show_ui'            => true,
+				'show_in_menu'       => true,
+				'query_var'          => true,
+			),
+		);
 	}
 }

@@ -11,6 +11,7 @@
 - Repeat activation and confirm no duplicate Recommended Reading term is created.
 - Confirm existing Resource Type terms remain unchanged.
 - Confirm Resources and Events menu items appear.
+- Confirm Opportunities menu items and the /opportunities/ archive appear.
 - Deactivate plugin and confirm no content is deleted.
 
 ## Rewrites
@@ -64,6 +65,21 @@
 - Published + Archived Resource does not appear in the archive or generic public listing.
 - Draft + Active Resource does not appear publicly.
 - Add another archive meta query constraint and confirm Resource status filtering preserves it.
+
+## Opportunities
+
+- Create an Opportunity as Draft and confirm it is not public.
+- Publish Opportunities in each Stage and confirm only Inactive is excluded from the archive.
+- Confirm Exploring, Seeking partners, and In progress appear in current Opportunity queries.
+- Confirm Success story appears in Success Story queries.
+- Confirm featured current Opportunities and featured Success Stories only return matching featured posts.
+- Confirm featured Opportunities appear first and remaining Opportunities sort by publish date descending.
+- Confirm changing an Opportunity to Success story preserves its permalink, content, and revisions.
+- Confirm Featured remains independent of Stage.
+- Confirm Stage and Featured columns and the Stage admin filter work.
+- Confirm subtitle saves and reloads.
+- Confirm the CTA is absent unless both label and a valid URL are set.
+- Confirm Opportunity CTA links are keyboard accessible and visible without relying on color alone.
 
 ## Recommended Publications Eligibility
 

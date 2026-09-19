@@ -52,6 +52,13 @@ final class Plugin {
 	private Resource_Query $resource_query;
 
 	/**
+	 * Opportunity query service.
+	 *
+	 * @var Opportunity_Query
+	 */
+	private Opportunity_Query $opportunity_query;
+
+	/**
 	 * ACF field group manager.
 	 *
 	 * @var ACF_Fields
@@ -71,6 +78,13 @@ final class Plugin {
 	 * @var Admin_Event
 	 */
 	private Admin_Event $admin_event;
+
+	/**
+	 * Opportunity admin manager.
+	 *
+	 * @var Admin_Opportunity
+	 */
+	private Admin_Opportunity $admin_opportunity;
 
 	/**
 	 * Renderer service.
@@ -131,7 +145,9 @@ final class Plugin {
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-acf-fields.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-admin-resource.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-admin-event.php';
+		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-admin-opportunity.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-resource-query.php';
+		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-opportunity-query.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-event-query.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-renderer.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-shortcodes.php';
@@ -139,6 +155,7 @@ final class Plugin {
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-blocks.php';
 
 		$this->resource_query = new Resource_Query();
+		$this->opportunity_query = new Opportunity_Query();
 		$this->event_query    = new Event_Query();
 
 		$this->post_types = new Post_Types();
@@ -147,6 +164,7 @@ final class Plugin {
 		$this->acf_fields        = new ACF_Fields();
 		$this->admin_resource    = new Admin_Resource();
 		$this->admin_event       = new Admin_Event();
+		$this->admin_opportunity = new Admin_Opportunity();
 		$this->renderer          = new Renderer();
 		$this->shortcodes        = new Shortcodes( $this->resource_query, $this->event_query, $this->renderer );
 		$this->structured_data   = new Structured_Data();
@@ -164,6 +182,7 @@ final class Plugin {
 		$this->meta_registration->register();
 		$this->acf_fields->register();
 		$this->resource_query->register();
+		$this->opportunity_query->register();
 		$this->renderer->register();
 		$this->event_query->register();
 		$this->shortcodes->register();
@@ -173,6 +192,7 @@ final class Plugin {
 		if ( is_admin() ) {
 			$this->admin_resource->register();
 			$this->admin_event->register();
+			$this->admin_opportunity->register();
 		}
 	}
 

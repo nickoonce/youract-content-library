@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,10 +12,11 @@ Structured Resources and Events library plugin for YourACT.net using native Word
 
 == Description ==
 
-Your ACT Content Library adds two structured content types to WordPress:
+Your ACT Content Library adds three structured content types to WordPress:
 
 - Resources
 - Events
+- Opportunities
 
 The plugin is built for Accessibility Coalition for Transformation (ACT) use cases with an emphasis on:
 
@@ -128,6 +129,16 @@ Server-rendered block for the Site Editor and template editor.
 
 Advanced Custom Fields provides the Resource editing interface. Public rendering remains available when ACF is inactive, but Resource fields cannot be edited until ACF is activated. Recommended Reading Resources must remain freely accessible, and editors should verify availability in Last Reviewed. The native WordPress excerpt is the ACT Summary.
 
+= Opportunity Fields =
+
+- Stage: Exploring, Seeking partners, In progress, Success story, or Inactive
+- Featured opportunity
+- Subtitle
+- CTA label
+- CTA URL
+
+Opportunities use native Draft and Published post states. Inactive Opportunities are excluded from public archive collections. Featured Opportunities appear first, followed by publish date descending. A CTA is displayed only when both the label and URL are valid.
+
 = Event Fields =
 
 - Event start UTC timestamp (stored)
@@ -147,6 +158,7 @@ Templates can be overridden by placing files in your active theme:
 - /youract-content-library/event-card.php
 - /youract-content-library/resource-details.php
 - /youract-content-library/event-details.php
+- /youract-content-library/opportunity-details.php
 
 Use hooks to customize output and behavior without editing plugin core.
 
@@ -190,6 +202,10 @@ UTC Unix timestamps are stored. Admin entry/editing uses local time in the selec
 Yes, on singular Event pages when enough data is available for valid JSON-LD.
 
 == Changelog ==
+
+= 1.1.1 =
+
+- Added Opportunities with lifecycle stages, featured ordering, protected metadata, details output, and administration tools.
 
 = 1.1.0 =
 

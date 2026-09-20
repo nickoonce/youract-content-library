@@ -37,6 +37,7 @@ class Opportunity_Bindings {
 	public function register(): void {
 		add_action( 'init', array( $this, 'register_sources' ) );
 		add_filter( 'render_block', array( $this, 'format_stage_post_meta_block' ), 10, 3 );
+		add_filter( 'get_post_metadata', array( $this, 'format_archive_stage_meta' ), 10, 5 );
 	}
 
 	/**
@@ -44,8 +45,7 @@ class Opportunity_Bindings {
 	 *
 	 * @param string               $block_content Rendered block content.
 	 * @param array<string, mixed> $parsed_block  Parsed block data.
-	 * @param 
-ull|\WP_Block      $block         Block instance.
+	 * @param null|\WP_Block         $block         Block instance.
 	 * @return string
 	 */
 	public function format_stage_post_meta_block( string $block_content, array $parsed_block, $block = null ): string {
@@ -66,10 +66,46 @@ ull|\WP_Block      $block         Block instance.
 			return $block_content;
 		}
 
-		$stage       = str_replace( '_', '-', (string) get_post_meta( $post_id, 'act_opportunity_stage', true ) );
+		$stage       = $this->get_raw_stage( $post_id );
 		$stage_label = self::STAGE_LABELS[ $stage ] ?? self::STAGE_LABELS['exploring'];
 
 		return str_replace( esc_html( $stage ), esc_html__( 'Stage: ', 'youract-content-library' ) . $stage_label, $block_content );
+	}
+
+	/**
+	 * Formats direct theme metadata calls on the Opportunity archive.
+	 *
+	 * @param mixed  $value     Existing filtered value.
+	 * @param int    $object_id Post ID.
+	 * @param string $meta_key  Metadata key.
+	 * @param bool   $single    Whether one value is requested.
+	 * @param string $meta_type Metadata type.
+	 * @return mixed
+	 */
+	public function format_archive_stage_meta( $value, int $object_id, string $meta_key, bool $single, string $meta_type ) {
+		unset( $meta_type );
+
+		if ( null !== $value || ! $single || 'act_opportunity_stage' !== $meta_key || is_admin() || ! is_post_type_archive( 'act_opportunity' ) || 'act_opportunity' !== get_post_type( $object_id ) ) {
+			return $value;
+		}
+
+		$stage = $this->get_raw_stage( $object_id );
+
+		return __( 'Stage: ', 'youract-content-library' ) . ( self::STAGE_LABELS[ $stage ] ?? self::STAGE_LABELS['exploring'] );
+	}
+
+	/**
+	 * Returns the stored Opportunity stage without presentation filters.
+	 *
+	 * @param int $post_id Opportunity ID.
+	 * @return string
+	 */
+	private function get_raw_stage( int $post_id ): string {
+		if ( function_exists( 'get_metadata_raw' ) ) {
+			return str_replace( '_', '-', (string) get_metadata_raw( 'post', $post_id, 'act_opportunity_stage', true ) );
+		}
+
+		return str_replace( '_', '-', (string) get_post_meta( $post_id, 'act_opportunity_stage', true ) );
 	}
 
 	/**
@@ -119,7 +155,7 @@ ull|\WP_Block      $block         Block instance.
 			return '';
 		}
 
-		$stage = str_replace( '_', '-', (string) get_post_meta( $post_id, 'act_opportunity_stage', true ) );
+		$stage = $this->get_raw_stage( $post_id );
 
 		$stage_label = self::STAGE_LABELS[ $stage ] ?? self::STAGE_LABELS['exploring'];
 

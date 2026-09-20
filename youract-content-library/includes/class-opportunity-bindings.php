@@ -53,8 +53,11 @@ ull|\WP_Block      $block         Block instance.
 			return $block_content;
 		}
 
-		$binding = $parsed_block['attrs']['metadata']['bindings']['content'] ?? array();
-		if ( ! is_array( $binding ) || 'core/post-meta' !== ( $binding['source'] ?? '' ) || 'act_opportunity_stage' !== ( $binding['args']['key'] ?? '' ) ) {
+		$attributes = isset( $parsed_block['attrs'] ) && is_array( $parsed_block['attrs'] ) ? $parsed_block['attrs'] : array();
+		$binding    = $attributes['metadata']['bindings']['content'] ?? array();
+		$is_stage_meta = 'act_opportunity_stage' === ( $attributes['metaKey'] ?? '' );
+		$is_stage_binding = is_array( $binding ) && 'core/post-meta' === ( $binding['source'] ?? '' ) && 'act_opportunity_stage' === ( $binding['args']['key'] ?? '' );
+		if ( ! $is_stage_meta && ! $is_stage_binding ) {
 			return $block_content;
 		}
 

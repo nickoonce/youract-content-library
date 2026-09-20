@@ -30,6 +30,13 @@ class Opportunity_Bindings {
 	);
 
 	/**
+	 * Whether a raw stage read is currently in progress.
+	 *
+	 * @var bool
+	 */
+	private bool $reading_raw_stage = false;
+
+	/**
 	 * Registers Block Bindings hooks.
 	 *
 	 * @return void
@@ -85,6 +92,10 @@ class Opportunity_Bindings {
 	public function format_archive_stage_meta( $value, int $object_id, string $meta_key, bool $single, string $meta_type ) {
 		unset( $meta_type );
 
+		if ( $this->reading_raw_stage ) {
+			return $value;
+		}
+
 		if ( null !== $value || ! $single || 'act_opportunity_stage' !== $meta_key || is_admin() || ! is_post_type_archive( 'act_opportunity' ) || 'act_opportunity' !== get_post_type( $object_id ) ) {
 			return $value;
 		}
@@ -101,11 +112,17 @@ class Opportunity_Bindings {
 	 * @return string
 	 */
 	private function get_raw_stage( int $post_id ): string {
-		if ( function_exists( 'get_metadata_raw' ) ) {
-			return str_replace( '_', '-', (string) get_metadata_raw( 'post', $post_id, 'act_opportunity_stage', true ) );
-		}
+		$this->reading_raw_stage = true;
 
-		return str_replace( '_', '-', (string) get_post_meta( $post_id, 'act_opportunity_stage', true ) );
+		try {
+			if ( function_exists( 'get_metadata_raw' ) ) {
+				return str_replace( '_', '-', (string) get_metadata_raw( 'post', $post_id, 'act_opportunity_stage', true ) );
+			}
+
+			return str_replace( '_', '-', (string) get_post_meta( $post_id, 'act_opportunity_stage', true ) );
+		} finally {
+			$this->reading_raw_stage = false;
+		}
 	}
 
 	/**

@@ -87,6 +87,8 @@ class Opportunity_Bindings {
 
 		$stage = str_replace( '_', '-', (string) get_post_meta( $post_id, 'act_opportunity_stage', true ) );
 
-		return self::STAGE_LABELS[ $stage ] ?? self::STAGE_LABELS['exploring'];
+		$stage_label = self::STAGE_LABELS[ $stage ] ?? self::STAGE_LABELS['exploring'];
+
+		return __( 'Stage: ', 'youract-content-library' ) . $stage_label;
 	}
 }

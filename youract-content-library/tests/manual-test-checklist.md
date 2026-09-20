@@ -77,6 +77,7 @@
 - Confirm changing an Opportunity to Success story preserves its permalink, content, and revisions.
 - Confirm Featured remains independent of Stage.
 - Confirm Stage and Featured columns and the Stage admin filter work.
+- Confirm singular Opportunity details display the capitalized stage with the `Stage:` prefix.
 - Confirm subtitle saves and reloads.
 - Confirm Help needed saves as a single plain-text value and reloads in the Opportunity Details panel.
 - Confirm Help needed strips HTML and preserves plain-text line breaks when saved.

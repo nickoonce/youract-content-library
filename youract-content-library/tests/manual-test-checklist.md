@@ -78,6 +78,11 @@
 - Confirm Featured remains independent of Stage.
 - Confirm Stage and Featured columns and the Stage admin filter work.
 - Confirm subtitle saves and reloads.
+- Confirm Help needed saves as a single plain-text value and reloads in the Opportunity Details panel.
+- Confirm Help needed strips HTML and preserves plain-text line breaks when saved.
+- Confirm Help needed is empty by default and remains empty when submitted blank.
+- Confirm registered Help needed metadata appears in REST responses and can be updated only by users who can edit the Opportunity.
+- Confirm a `core/post-meta` block binding to `act_opportunity_help_needed` renders in a single template and Query Loop.
 - Confirm the CTA is absent unless both label and a valid URL are set.
 - Confirm Opportunity CTA links are keyboard accessible and visible without relying on color alone.
 

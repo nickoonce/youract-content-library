@@ -147,6 +147,7 @@ class Meta_Registration {
 	private function register_opportunity_meta(): void {
 		$this->register_string_meta( 'act_opportunity', 'act_opportunity_stage', 'string', array( $this, 'sanitize_opportunity_stage' ), 'exploring' );
 		$this->register_string_meta( 'act_opportunity', 'act_opportunity_subtitle', 'string', 'sanitize_text_field' );
+		$this->register_string_meta( 'act_opportunity', 'act_opportunity_help_needed', 'string', 'sanitize_textarea_field' );
 		$this->register_string_meta( 'act_opportunity', 'act_opportunity_cta_label', 'string', 'sanitize_text_field' );
 		$this->register_string_meta( 'act_opportunity', 'act_opportunity_cta_url', 'uri', array( $this, 'sanitize_url' ) );
 

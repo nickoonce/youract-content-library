@@ -56,10 +56,13 @@ Opportunity metadata:
 - `act_opportunity_stage`
 - `act_opportunity_featured`
 - `act_opportunity_subtitle`
+- `act_opportunity_help_needed`
 - `act_opportunity_cta_label`
 - `act_opportunity_cta_url`
 
 An Opportunity stays in the same post through its lifecycle. Moving it to Success story does not change its permalink, content, or revisions. A CTA is rendered only when both a label and a valid URL are present.
+
+`act_opportunity_help_needed` is a plain-text summary of the contributions needed now. It is registered for REST access and can be displayed in templates and Query Loop patterns by binding a `core/post-meta` block to this key. Keep the complete “We’re looking for” list in the post content.
 
 ## Architecture Summary
 

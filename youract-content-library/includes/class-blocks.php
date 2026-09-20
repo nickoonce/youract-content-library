@@ -59,11 +59,27 @@ class Blocks {
 			true
 		);
 
+		wp_register_script(
+			'youract-opportunity-cta-block-editor',
+			YOURACT_CONTENT_LIBRARY_URL . 'assets/js/opportunity-cta-block-editor.js',
+			array( 'wp-blocks', 'wp-element', 'wp-i18n' ),
+			YOURACT_CONTENT_LIBRARY_VERSION,
+			true
+		);
+
 		register_block_type(
 			YOURACT_CONTENT_LIBRARY_PATH . 'blocks/event-details',
 			array(
 				'editor_script'   => 'youract-event-details-block-editor',
 				'render_callback' => array( $this, 'render_event_details_block' ),
+			)
+		);
+
+		register_block_type(
+			YOURACT_CONTENT_LIBRARY_PATH . 'blocks/opportunity-cta',
+			array(
+				'editor_script'   => 'youract-opportunity-cta-block-editor',
+				'render_callback' => array( $this, 'render_opportunity_cta_block' ),
 			)
 		);
 	}
@@ -119,5 +135,43 @@ class Blocks {
 		do_action( 'youract_after_event_details', $post_id, $details, $html );
 
 		return $html;
+	}
+
+	/**
+	 * Renders the Opportunity CTA dynamic block.
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @param string               $content    Inner block content.
+	 * @param object|null          $block      Parsed block instance.
+	 * @return string
+	 */
+	public function render_opportunity_cta_block( array $attributes, string $content, $block = null ): string {
+		unset( $attributes, $content );
+
+		$post_id = 0;
+		if ( is_object( $block ) && isset( $block->context ) && is_array( $block->context ) ) {
+			$post_id = isset( $block->context['postId'] ) ? (int) $block->context['postId'] : 0;
+		}
+
+		if ( $post_id <= 0 ) {
+			$post_id = get_the_ID() ? (int) get_the_ID() : 0;
+		}
+
+		if ( $post_id <= 0 ) {
+			$post_id = (int) get_queried_object_id();
+		}
+
+		if ( $post_id <= 0 || 'act_opportunity' !== get_post_type( $post_id ) ) {
+			return '';
+		}
+
+		$label = trim( (string) get_post_meta( $post_id, 'act_opportunity_cta_label', true ) );
+		$url   = esc_url( (string) get_post_meta( $post_id, 'act_opportunity_cta_url', true ) );
+
+		if ( '' === $label || '' === $url ) {
+			return '';
+		}
+
+		return '<p class="youract-opportunity-cta"><a href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a></p>';
 	}
 }

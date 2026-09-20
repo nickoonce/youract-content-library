@@ -59,6 +59,13 @@ final class Plugin {
 	private Opportunity_Query $opportunity_query;
 
 	/**
+	 * Opportunity Block Bindings service.
+	 *
+	 * @var Opportunity_Bindings
+	 */
+	private Opportunity_Bindings $opportunity_bindings;
+
+	/**
 	 * ACF field group manager.
 	 *
 	 * @var ACF_Fields
@@ -148,6 +155,7 @@ final class Plugin {
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-admin-opportunity.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-resource-query.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-opportunity-query.php';
+		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-opportunity-bindings.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-event-query.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-renderer.php';
 		require_once YOURACT_CONTENT_LIBRARY_PATH . 'includes/class-shortcodes.php';
@@ -156,6 +164,7 @@ final class Plugin {
 
 		$this->resource_query = new Resource_Query();
 		$this->opportunity_query = new Opportunity_Query();
+		$this->opportunity_bindings = new Opportunity_Bindings();
 		$this->event_query    = new Event_Query();
 
 		$this->post_types = new Post_Types();
@@ -183,6 +192,7 @@ final class Plugin {
 		$this->acf_fields->register();
 		$this->resource_query->register();
 		$this->opportunity_query->register();
+		$this->opportunity_bindings->register();
 		$this->renderer->register();
 		$this->event_query->register();
 		$this->shortcodes->register();

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "youract/opportunity-cta",
+  "title": "YourACT Opportunity CTA",
+  "category": "widgets",
+  "icon": "admin-links",
+  "description": "Displays the CTA link for the current Opportunity post.",
+  "textdomain": "youract-content-library",
+  "usesContext": ["postId", "postType"],
+  "supports": {
+    "html": false,
+    "auto_register": true
+  }
+}

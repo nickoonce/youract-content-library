@@ -4,7 +4,7 @@ Tags: accessibility, events, resources, custom post type
 Requires at least: 6.7
 Tested up to: 6.8
 Requires PHP: 8.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -134,8 +134,11 @@ Advanced Custom Fields provides the Resource editing interface. Public rendering
 - Stage: Exploring, Seeking partners, In progress, Success story, or Inactive
 - Featured opportunity
 - Subtitle
+- Help needed: a short plain-text summary of the contributions needed now
 - CTA label
 - CTA URL
+
+The Help needed field is available to templates and Query Loop patterns through a `core/post-meta` block binding to `act_opportunity_help_needed`. Keep the complete “We’re looking for” list in the post content.
 
 Opportunities use native Draft and Published post states. Inactive Opportunities are excluded from public archive collections. Featured Opportunities appear first, followed by publish date descending. A CTA is displayed only when both the label and URL are valid.
 
@@ -202,6 +205,10 @@ UTC Unix timestamps are stored. Admin entry/editing uses local time in the selec
 Yes, on singular Event pages when enough data is available for valid JSON-LD.
 
 == Changelog ==
+
+= 1.1.3 =
+
+- Added the plain-text Opportunity Help needed field, REST access, and `core/post-meta` Block Binding support.
 
 = 1.1.2 =
 

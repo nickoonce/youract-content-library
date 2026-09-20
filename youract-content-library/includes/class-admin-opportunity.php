@@ -99,6 +99,11 @@ class Admin_Opportunity {
 				<input id="act_opportunity_subtitle" name="youract_opportunity[subtitle]" type="text" class="widefat" value="<?php echo esc_attr( (string) get_post_meta( $post->ID, 'act_opportunity_subtitle', true ) ); ?>" />
 			</p>
 			<p>
+				<label for="act_opportunity_help_needed"><strong><?php esc_html_e( 'Help needed', 'youract-content-library' ); ?></strong></label><br />
+				<textarea id="act_opportunity_help_needed" name="youract_opportunity[help_needed]" class="widefat" rows="5"><?php echo esc_textarea( (string) get_post_meta( $post->ID, 'act_opportunity_help_needed', true ) ); ?></textarea>
+				<span class="description"><?php esc_html_e( 'Briefly describe the contributions that would move this opportunity forward now. Use the post content for the complete We’re looking for list.', 'youract-content-library' ); ?></span>
+			</p>
+			<p>
 				<label for="act_opportunity_cta_label"><strong><?php esc_html_e( 'CTA label', 'youract-content-library' ); ?></strong></label><br />
 				<input id="act_opportunity_cta_label" name="youract_opportunity[cta_label]" type="text" class="widefat" value="<?php echo esc_attr( (string) get_post_meta( $post->ID, 'act_opportunity_cta_label', true ) ); ?>" />
 			</p>
@@ -138,6 +143,7 @@ class Admin_Opportunity {
 
 		update_post_meta( $post_id, 'act_opportunity_stage', $stage );
 		update_post_meta( $post_id, 'act_opportunity_subtitle', sanitize_text_field( (string) ( $input['subtitle'] ?? '' ) ) );
+		update_post_meta( $post_id, 'act_opportunity_help_needed', sanitize_textarea_field( (string) ( $input['help_needed'] ?? '' ) ) );
 		update_post_meta( $post_id, 'act_opportunity_cta_label', sanitize_text_field( (string) ( $input['cta_label'] ?? '' ) ) );
 		update_post_meta( $post_id, 'act_opportunity_cta_url', esc_url_raw( trim( (string) ( $input['cta_url'] ?? '' ) ) ) );
 		update_post_meta( $post_id, 'act_opportunity_featured', empty( $input['featured'] ) ? 0 : 1 );
